@@ -1,0 +1,88 @@
+{
+  "id": "12bbed93-e55a-417b-a0fc-49a981c8f063",
+  "version": "2.0",
+  "name": "gitlab-create-testcase",
+  "url": "https://git.iptp.net",
+  "tests": [{
+    "id": "2f09ae45-7949-4f0e-a6bc-e2de5979a9ca",
+    "name": "Untitled",
+    "commands": [{
+      "id": "04743653-dcbf-4d0e-b1c4-12b3b1493dd6",
+      "comment": "",
+      "command": "open",
+      "target": "/xm/xm-web/-/issues/?sort=updated_desc&state=opened&label_name%5B%5D=Need%20to%20test&first_page_size=20",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "ac5a4d33-406c-4ff0-b7cf-400efa00de0e",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
+  }, {
+    "id": "4ed02ba2-6711-4afb-af2d-0f30723ffce3",
+    "name": "gitlab-signin",
+    "commands": [{
+      "id": "960b5816-b293-4460-b337-a65ec9320b97",
+      "comment": "",
+      "command": "open",
+      "target": "/users/sign_in",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "3b2fd8d1-077e-48ac-a81d-c005e9417a79",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1047x652",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "3f99e886-e022-4560-8142-505db2f0b591",
+      "comment": "",
+      "command": "type",
+      "target": "id=user_login",
+      "targets": [
+        ["id=user_login", "id"],
+        ["name=user[login]", "name"],
+        ["css=#user_login", "css:finder"],
+        ["xpath=//input[@id='user_login']", "xpath:attributes"],
+        ["xpath=//form[@id='new_user']/div/input", "xpath:idRelative"],
+        ["xpath=//div/input", "xpath:position"]
+      ],
+      "value": "dango@iptp.vn"
+    }, {
+      "id": "02565743-4d88-45bf-85bd-ec8864d27f82",
+      "comment": "",
+      "command": "type",
+      "target": "id=user_password",
+      "targets": [
+        ["id=user_password", "id"],
+        ["name=user[password]", "name"],
+        ["css=#user_password", "css:finder"],
+        ["xpath=//input[@id='user_password']", "xpath:attributes"],
+        ["xpath=//form[@id='new_user']/div[2]/input", "xpath:idRelative"],
+        ["xpath=//div[2]/input", "xpath:position"]
+      ],
+      "value": "Children2306@#)^"
+    }, {
+      "id": "9eda02a3-e9b4-4b89-b54c-412b91d24caf",
+      "comment": "",
+      "command": "close",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "f3c122c0-6953-4279-8627-118aeed73ddb",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["2f09ae45-7949-4f0e-a6bc-e2de5979a9ca"]
+  }],
+  "urls": ["https://git.iptp.net/"],
+  "plugins": []
+}

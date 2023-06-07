@@ -17,7 +17,9 @@ try:
   load_dotenv()
   GITLAB_USERNAME = os.environ["GITLAB_USERNAME"]
   GITLAB_PASSWORD = os.environ["GITLAB_PASSWORD"]
-  # print("Environment variable>>> ", GITLAB_USERNAME, GITLAB_PASSWORD)
+  TEST_ISSUE_TEMP = os.environ["TEST_ISSUE_TEMP"]
+  TEST_ISSUE_DESC_TEMP = os.environ["TEST_ISSUE_DESC_TEMP"]
+  # print("Environment variable>>> ", TEST_ISSUE_TEMP, TEST_ISSUE_DESC_TEMP)
 
 except KeyError:
   print("Environment variable does not exist", KeyError)
@@ -33,23 +35,42 @@ class TestGitlabsignin():
     self.driver.quit()
     print("3nd")
   
-  def find_element(self):
-    delay = 10 # seconds
-    elem = WebDriverWait(self.driver, delay).until(self.driver.find_element(By.XPATH, '//*[@class="content-list issuable-list issues-list"]/li'))
-    # content = self.driver.find_element(By.CLASS_NAME, "//content-list issuable-list issues-list")
-    i = 1
-    for x in elem:
-      i += 1
-      print(">>>>i: ", i)
+  def update_result(self, iss_number):
+    self.driver.get("https://docs.google.com/spreadsheets/d/1IATFgzFi9-t5bwlzXBL0l8HdWvyGIkLK/edit?usp=sharing&ouid=111105249960062423142&rtpof=true&sd=true")
 
-      # tag_a = self.driver.find_element(By.XPATH, "//a[@class='gl-link issue-title-text']")
-      # url = tag_a.get_attribute("href")
-      # txt = tag_a.get_attribute("text")
-      # print(">>>>Url: ", url)
-      # print(">>>>Text: ", txt)
-      # iss_number = url[url.rfind("/"):]
-      # print(">>>>iss Number: ", iss_number)
-      # self.driver.get(url)
+  def create_test_issue(self, iss_number):
+    delay = 3 # seconds
+    self.driver.get("https://git.iptp.net/xm/xm-web/-/issues/new")
+    self.driver.find_element(By.ID, "issue_title").send_keys(TEST_ISSUE_TEMP + iss_number)
+    self.driver.find_element(By.ID, "issue_description").send_keys(TEST_ISSUE_DESC_TEMP + " #" + iss_number)
+    a_assign_to_me_link = self.driver.find_element(By.XPATH, "//a[@data-qa-selector='assign_to_me_link']")
+    a_assign_to_me_link.click()
+    self.driver.find_element(By.XPATH, "//button[@type='submit']").click()
+    url = self.driver.current_url
+    print(">>>>New Issue url: ", url)
+    self.driver.find_element(By.XPATH, "//button[@data-qa-selector='related_issues_plus_button']").click()
+    self.driver.find_element(By.ID, "add-related-issues-form-input").send_keys(iss_number + " ")
+    # add_issue_button = WebDriverWait(self.driver, delay).until(expected_conditions.presence_of_element_located((By.XPATH, "//button[@data-qa-selector='add_issue_button']")))
+    # self.driver.find_element(By.XPATH, "//button[@data-qa-selector='add_issue_button']").click()
+    # add_issue_button.click()
+    self.driver.find_element(By.XPATH, "//button[@type='submit']").click()
+    elem = WebDriverWait(self.driver, delay).until(expected_conditions.presence_of_element_located((By.XPATH, "//ul[@class='related-items-list content-list']")))
+     
+  def find_element(self):
+    delay = 3 # seconds
+    elem = WebDriverWait(self.driver, delay).until(expected_conditions.presence_of_element_located((By.XPATH, "//ul[@class='content-list issuable-list issues-list']/li")))
+    print(">>>>elem: ", elem)
+    elems = self.driver.find_elements(By.XPATH, "//div[@class='issuable-list-container']/ul/li")
+    for x in elems:
+      tag_a = x.find_element(By.XPATH, "//a[@class='gl-link issue-title-text']")
+      print(">>>>tag_a: ", tag_a)
+      url = tag_a.get_attribute("href")
+      print(">>>>url: ", url)
+      iss_number = url[url.rfind("/") + 1:]
+      print(">>>>iss Number: ", iss_number)
+      self.create_test_issue(iss_number)
+
+  
 
   def test_gitlabsignin(self):
     print("2")
@@ -61,6 +82,7 @@ class TestGitlabsignin():
     print(">>", submit_ele)
     submit_ele.click()
     self.driver.get("https://git.iptp.net/xm/xm-web/-/issues/?sort=updated_desc&state=opened&label_name%5B%5D=Need%20to%20test&first_page_size=20")
+    # self.driver.set_window_size(1047, 652)
     self.find_element()
     self.driver.close()
 

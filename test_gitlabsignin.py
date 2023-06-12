@@ -90,7 +90,7 @@ class TestGitlabsignin():
     
     return path_file_dst
 
-  def create_test_issue(self, iss_number, project, new_issue_url):
+  def create_test_issue_and_file(self, iss_number, project, new_issue_url):
     issue_name = TEST_ISSUE_TEMP + iss_number
     self.driver.get(new_issue_url)
     self.driver.find_element(By.ID, "issue_title").send_keys(issue_name)
@@ -124,7 +124,7 @@ class TestGitlabsignin():
         print(">>>>iss Number: ", iss_number)
 
         # # create test issue
-        issue_test_url, path = self.create_test_issue(iss_number, project, new_issue_url)
+        issue_test_url, path = self.create_test_issue_and_file(iss_number, project, new_issue_url)
         issue_test_number = issue_test_url[issue_test_url.rfind("/") + 1:]
         
         # update main issue

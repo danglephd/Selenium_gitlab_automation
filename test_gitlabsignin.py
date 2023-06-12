@@ -111,7 +111,6 @@ class TestGitlabsignin():
     return issue_test_url, path
 
   def get_gitlab_issue_info(self, project, new_issue_url):
-    delay = 3 # seconds
     try:
       elem = self.wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//ul[@class='content-list issuable-list issues-list']/li")))
       print(">>>>elem: ", elem)

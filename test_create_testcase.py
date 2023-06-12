@@ -40,7 +40,7 @@ except KeyError:
   print("Environment variable does not exist", KeyError)
 
 
-class TestGitlabsignin():
+class TestGitlab():
   def setup_method(self, method):
     delay = 3 # seconds
     self.driver = webdriver.Chrome()
@@ -185,14 +185,18 @@ class TestGitlabsignin():
       self.driver.get(proj_url[0])
       self.get_gitlab_issue_info(proj_url[1], proj_url[2])
 
-  def test_gitlabsignin(self):
-    print("2")
+  def gitlabsignin(self):
+    print("gitlabsignin")
     self.driver.get(sign_in_url)
     self.driver.set_window_size(1047, 652)
     self.driver.find_element(By.ID, "user_login").send_keys(GITLAB_USERNAME)
     self.driver.find_element(By.ID, "user_password").send_keys(GITLAB_PASSWORD)
     submit_ele = self.driver.find_element(By.XPATH, "//button[@type='submit']")
     submit_ele.click()
+
+  def test_create_testcase(self):
+    print("2")
+    self.gitlabsignin()
     self.collect_gitlab_issues()
     sqlite.save(issue_list) # Save to db
     self.driver.close()

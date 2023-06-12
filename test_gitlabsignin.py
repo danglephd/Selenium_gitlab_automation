@@ -125,8 +125,8 @@ class TestGitlabsignin():
         print(">>>>iss Number: ", iss_number)
 
         # # create test issue
-        # issue_test_url, path = self.create_test_issue(iss_number, project, new_issue_url)
-        # issue_test_number = issue_test_url[issue_test_url.rfind("/") + 1:]
+        issue_test_url, path = self.create_test_issue(iss_number, project, new_issue_url)
+        issue_test_number = issue_test_url[issue_test_url.rfind("/") + 1:]
         
         # update main issue
         # delay = 10
@@ -140,15 +140,14 @@ class TestGitlabsignin():
         # self.driver.find_element(By.XPATH, "//input[@data-qa-selector='dropdown_input_field']").click()
         elem_find_label = self.driver.find_element(By.XPATH, "//input[@aria-label='Search labels']")
         elem_find_label.click()
-        elem_find_label.send_keys("Need to")
 
+        elem_find_label.send_keys("Test case")
         elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
         elem_dropdown = self.driver.find_element(By.XPATH, "//button[@class='dropdown-item is-focused']")
         elem_dropdown.click()
 
-        elem_find_label.click()
-        elem_find_label.send_keys("Test case")
-
+        # elem_find_label.click()
+        elem_find_label.send_keys("Need to ")
         elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
         elem_dropdown = self.driver.find_element(By.XPATH, "//button[@class='dropdown-item is-focused']")
         elem_dropdown.click()
@@ -158,8 +157,8 @@ class TestGitlabsignin():
         elem_edit.click()
 
         # # update db
-        # item = GitLab_Issue_Obj(0, project, "Created", path, issue_test_url, issue_test_number, iss_number, issue_url)
-        # issue_list.append(item)
+        item = GitLab_Issue_Obj(0, project, "Created", path, issue_test_url, issue_test_number, iss_number, issue_url)
+        issue_list.append(item)
     except TimeoutException as ex:
       print("Exception has been thrown. " + str(ex.msg))
 

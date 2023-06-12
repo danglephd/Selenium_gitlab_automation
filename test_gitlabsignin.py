@@ -15,11 +15,12 @@ from dotenv import load_dotenv
 import shutil
 import sqlite
 from sqlite import GitLab_Issue_Obj
+from openpyxl import load_workbook
 
 project_links = [
-                #  ["https://git.iptp.net/xm/xm-web/-/issues/?label_name%5B%5D=Need%20to%20test", 'xm-web', "https://git.iptp.net/xm/xm-web/-/issues/new"],
-                #  ["https://git.iptp.net/andre/xm-api/-/issues/?label_name%5B%5D=Need%20to%20test", "xm-api", "https://git.iptp.net/andre/xm-api/-/issues/new"],
-                #  ["https://git.iptp.net/erp/erp-web/-/issues/?label_name%5B%5D=Need%20to%20test", "erp-web", "https://git.iptp.net/erp/erp-web/-/issues/new"],
+                 ["https://git.iptp.net/xm/xm-web/-/issues/?label_name%5B%5D=Need%20to%20test", 'xm-web', "https://git.iptp.net/xm/xm-web/-/issues/new"],
+                 ["https://git.iptp.net/andre/xm-api/-/issues/?label_name%5B%5D=Need%20to%20test", "xm-api", "https://git.iptp.net/andre/xm-api/-/issues/new"],
+                 ["https://git.iptp.net/erp/erp-web/-/issues/?label_name%5B%5D=Need%20to%20test", "erp-web", "https://git.iptp.net/erp/erp-web/-/issues/new"],
                  ["https://git.iptp.net/erp/erp-server/-/issues/?label_name%5B%5D=Need%20to%20test", "erp-server", "https://git.iptp.net/erp/erp-server/-/issues/new"]
                 ]
 sign_in_url = "https://git.iptp.net/users/sign_in"
@@ -82,19 +83,38 @@ class TestGitlabsignin():
     print(src[0], path_file_dst)
 
     if os.path.exists(path_folder_dst):
-      print("File exist: ", path_folder_dst)
+      print("Folder is exist: ", path_folder_dst)
     else:
-      print("File not exist!", path_folder_dst)
+      print("Folder is not exist!", path_folder_dst)
       os.makedirs(path_folder_dst)
     shutil.copy(src[0], path_file_dst)
     
     return path_file_dst
 
+  def update_file_testcase(self, path, iss_test_number, issue_desc, test_scenario):
+    print("Update file testcase", path)
+    
+    #load excel file
+    workbook = load_workbook(filename=path)
+    
+    #open workbook
+    sheet = workbook.active
+    
+    #modify the desired cell
+    sheet["C1"] = iss_test_number
+    sheet["F1"] = issue_desc
+    sheet["B14"] = test_scenario
+    
+    #save the file
+    workbook.save(path)
+
+
   def create_test_issue_and_file(self, iss_number, project, new_issue_url):
-    issue_name = TEST_ISSUE_TEMP + iss_number
+    issue_test_name = TEST_ISSUE_TEMP + iss_number
+    issue_test_desc = TEST_ISSUE_DESC_TEMP + " #" + iss_number
     self.driver.get(new_issue_url)
-    self.driver.find_element(By.ID, "issue_title").send_keys(issue_name)
-    self.driver.find_element(By.ID, "issue_description").send_keys(TEST_ISSUE_DESC_TEMP + " #" + iss_number)
+    self.driver.find_element(By.ID, "issue_title").send_keys(issue_test_name)
+    self.driver.find_element(By.ID, "issue_description").send_keys(issue_test_desc)
     a_assign_to_me_link = self.driver.find_element(By.XPATH, "//a[@data-qa-selector='assign_to_me_link']")
     a_assign_to_me_link.click() # Assign issue test to QA
     self.driver.find_element(By.XPATH, "//button[@type='submit']").click() # Create test Issue
@@ -108,6 +128,7 @@ class TestGitlabsignin():
     elem = self.wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//ul[@class='related-items-list content-list']"))) # Wait for finish add related 
     folder_name = TEST_ISSUE_FOLDER_TEMP + iss_number
     path = self.create_testcase_file(iss_number, project, folder_name, file_name)
+    self.update_file_testcase(path, issue_test_number, issue_test_desc, "")
     return issue_test_url, path
 
   def get_gitlab_issue_info(self, project, new_issue_url):
@@ -137,13 +158,15 @@ class TestGitlabsignin():
 
         elem_find_label.send_keys("Test case")
         elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
-        elem_dropdown = self.driver.find_element(By.XPATH, "//button[@class='dropdown-item is-focused']")
-        elem_dropdown.click()
+        elem.click()
+        # elem_dropdown = self.driver.find_element(By.XPATH, "//button[@class='dropdown-item is-focused']")
+        # elem_dropdown.click()
 
         elem_find_label.send_keys("Need to ")
         elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
-        elem_dropdown = self.driver.find_element(By.XPATH, "//button[@class='dropdown-item is-focused']")
-        elem_dropdown.click()
+        elem.click()
+        # elem_dropdown = self.driver.find_element(By.XPATH, "//button[@class='dropdown-item is-focused']")
+        # elem_dropdown.click()
 
         elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@title='Edit title and description']")))
         elem_edit = self.driver.find_element(By.XPATH, "//button[@title='Edit title and description']")

@@ -73,22 +73,22 @@ class TestGitlabsignin():
 
   def create_testcase_file(self, iss_number, project, folder_name, file_name):
     print("create_testcase_file", iss_number, project, folder_name, file_name)
-    path_dst_file = "D:\\Testcase\\RPA\\{0}\\{1}\\{2}.xlsx"
-    path_dst_folder = "D:\\Testcase\\RPA\\{0}\\{1}"
+    path_dst_file_tmp = "D:\\Testcase\\RPA\\{0}\\{1}\\{2}.xlsx"
+    path_dst_folder_tmp = "D:\\Testcase\\RPA\\{0}\\{1}"
     path_src = ".\\TEMPLATE\\Testcase-template-{0}.xlsx"
     src = str(path_src.format(project)), 
-    file_dst = str(path_dst_file.format(project, folder_name, "".join(file_name)))
-    folder_dst = str(path_dst_folder.format(project, folder_name))
-    print(src[0], file_dst)
+    path_file_dst = str(path_dst_file_tmp.format(project, folder_name, "".join(file_name)))
+    path_folder_dst = str(path_dst_folder_tmp.format(project, folder_name))
+    print(src[0], path_file_dst)
 
-    if os.path.exists(folder_dst):
-      print("File exist: ", folder_dst)
+    if os.path.exists(path_folder_dst):
+      print("File exist: ", path_folder_dst)
     else:
-      print("File not exist!", folder_dst)
-      os.makedirs(folder_dst)
-    shutil.copy(src[0], file_dst)
+      print("File not exist!", path_folder_dst)
+      os.makedirs(path_folder_dst)
+    shutil.copy(src[0], path_file_dst)
     
-    return path_dst_file
+    return path_file_dst
 
   def create_test_issue(self, iss_number, project, new_issue_url):
     issue_name = TEST_ISSUE_TEMP + iss_number
@@ -129,15 +129,10 @@ class TestGitlabsignin():
         issue_test_number = issue_test_url[issue_test_url.rfind("/") + 1:]
         
         # update main issue
-        # delay = 10
         self.driver.get(issue_url)
         elem = self.wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[@data-qa-selector='edit_link']")))
         self.driver.find_element(By.XPATH, "//button[@data-qa-selector='edit_link']").click() # Open textbox to input 
         elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//input[@aria-label='Search labels']")))
-        # elem = self.wait.until(expected_conditions.presence_of_element_located((By.ID, "__BVID__263")))
-        # self.driver.find_element(By.ID, "__BVID__263").click()
-        # self.driver.find_element(By.ID, "__BVID__263").send_keys("Need to")
-        # self.driver.find_element(By.XPATH, "//input[@data-qa-selector='dropdown_input_field']").click()
         elem_find_label = self.driver.find_element(By.XPATH, "//input[@aria-label='Search labels']")
         elem_find_label.click()
 
@@ -146,7 +141,6 @@ class TestGitlabsignin():
         elem_dropdown = self.driver.find_element(By.XPATH, "//button[@class='dropdown-item is-focused']")
         elem_dropdown.click()
 
-        # elem_find_label.click()
         elem_find_label.send_keys("Need to ")
         elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
         elem_dropdown = self.driver.find_element(By.XPATH, "//button[@class='dropdown-item is-focused']")

@@ -9,16 +9,30 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.common.exceptions import TimeoutException
 import os
 from dotenv import load_dotenv
+import shutil
+import sqlite
+from sqlite import GitLab_Issue_Obj
 
+project_links = [
+                #  ["https://git.iptp.net/xm/xm-web/-/issues/?label_name%5B%5D=Need%20to%20test", 'xm-web', "https://git.iptp.net/xm/xm-web/-/issues/new"],
+                #  ["https://git.iptp.net/andre/xm-api/-/issues/?label_name%5B%5D=Need%20to%20test", "xm-api", "https://git.iptp.net/andre/xm-api/-/issues/new"],
+                #  ["https://git.iptp.net/erp/erp-web/-/issues/?label_name%5B%5D=Need%20to%20test", "erp-web", "https://git.iptp.net/erp/erp-web/-/issues/new"],
+                 ["https://git.iptp.net/erp/erp-server/-/issues/?label_name%5B%5D=Need%20to%20test", "erp-server", "https://git.iptp.net/erp/erp-server/-/issues/new"]
+                ]
+sign_in_url = "https://git.iptp.net/users/sign_in"
+issue_list = []
 
 try:
   load_dotenv()
   GITLAB_USERNAME = os.environ["GITLAB_USERNAME"]
   GITLAB_PASSWORD = os.environ["GITLAB_PASSWORD"]
   TEST_ISSUE_TEMP = os.environ["TEST_ISSUE_TEMP"]
+  TEST_ISSUE_FOLDER_TEMP = os.environ["TEST_ISSUE_FOLDER_TEMP"]
   TEST_ISSUE_DESC_TEMP = os.environ["TEST_ISSUE_DESC_TEMP"]
+  TEST_ISSUE_FILE_TEMP = os.environ["TEST_ISSUE_FILE_TEMP"]
   # print("Environment variable>>> ", TEST_ISSUE_TEMP, TEST_ISSUE_DESC_TEMP)
 
 except KeyError:
@@ -27,7 +41,9 @@ except KeyError:
 
 class TestGitlabsignin():
   def setup_method(self, method):
+    delay = 3 # seconds
     self.driver = webdriver.Chrome()
+    self.wait = WebDriverWait(self.driver, delay)
     self.vars = {}
     print("1")
   
@@ -38,59 +54,135 @@ class TestGitlabsignin():
   def update_result(self, iss_number):
     self.driver.get("https://docs.google.com/spreadsheets/d/1IATFgzFi9-t5bwlzXBL0l8HdWvyGIkLK/edit?usp=sharing&ouid=111105249960062423142&rtpof=true&sd=true")
 
-  def create_test_issue(self, iss_number):
-    delay = 3 # seconds
-    self.driver.get("https://git.iptp.net/xm/xm-web/-/issues/new")
-    self.driver.find_element(By.ID, "issue_title").send_keys(TEST_ISSUE_TEMP + iss_number)
+  # def test_create_testcase_file(self):
+  #   print("test_create_db")
+    
+  #   for proj_url in project_links:
+  #     print(">>>", proj_url[0])
+  #     print(">>>>>", proj_url[1])
+  #     iss_number = "111", 
+  #     project = proj_url[1], 
+  #     folder_name = "{0}{1}".format(TEST_ISSUE_TEMP, iss_number[0]), 
+  #     file_name = "{0}-{1}-{2}".format(TEST_ISSUE_FILE_TEMP, iss_number[0], "123")
+  #     # folder_name = "{0}{1}".format(TEST_ISSUE_TEMP, "".join(iss_number + "")), 
+  #     # file_name = "{0}-{1}-{2}".format(TEST_ISSUE_FILE_TEMP, "".join(iss_number + ""), 123)
+  #     print(">>aaa>>", folder_name[0])
+  #     print(">>bbb>>", file_name)
+
+  #     self.create_testcase_file(iss_number, project, folder_name[0], file_name)
+
+  def create_testcase_file(self, iss_number, project, folder_name, file_name):
+    print("create_testcase_file", iss_number, project, folder_name, file_name)
+    path_dst_file = "D:\\Testcase\\RPA\\{0}\\{1}\\{2}.xlsx"
+    path_dst_folder = "D:\\Testcase\\RPA\\{0}\\{1}"
+    path_src = ".\\TEMPLATE\\Testcase-template-{0}.xlsx"
+    src = str(path_src.format(project)), 
+    file_dst = str(path_dst_file.format(project, folder_name, "".join(file_name)))
+    folder_dst = str(path_dst_folder.format(project, folder_name))
+    print(src[0], file_dst)
+
+    if os.path.exists(folder_dst):
+      print("File exist: ", folder_dst)
+    else:
+      print("File not exist!", folder_dst)
+      os.makedirs(folder_dst)
+    shutil.copy(src[0], file_dst)
+    
+    return path_dst_file
+
+  def create_test_issue(self, iss_number, project, new_issue_url):
+    issue_name = TEST_ISSUE_TEMP + iss_number
+    self.driver.get(new_issue_url)
+    self.driver.find_element(By.ID, "issue_title").send_keys(issue_name)
     self.driver.find_element(By.ID, "issue_description").send_keys(TEST_ISSUE_DESC_TEMP + " #" + iss_number)
     a_assign_to_me_link = self.driver.find_element(By.XPATH, "//a[@data-qa-selector='assign_to_me_link']")
-    a_assign_to_me_link.click()
-    self.driver.find_element(By.XPATH, "//button[@type='submit']").click()
-    url = self.driver.current_url
-    print(">>>>New Issue url: ", url)
-    self.driver.find_element(By.XPATH, "//button[@data-qa-selector='related_issues_plus_button']").click()
-    self.driver.find_element(By.ID, "add-related-issues-form-input").send_keys(iss_number + " ")
-    # add_issue_button = WebDriverWait(self.driver, delay).until(expected_conditions.presence_of_element_located((By.XPATH, "//button[@data-qa-selector='add_issue_button']")))
-    # self.driver.find_element(By.XPATH, "//button[@data-qa-selector='add_issue_button']").click()
-    # add_issue_button.click()
-    self.driver.find_element(By.XPATH, "//button[@type='submit']").click()
-    elem = WebDriverWait(self.driver, delay).until(expected_conditions.presence_of_element_located((By.XPATH, "//ul[@class='related-items-list content-list']")))
-     
-  def find_element(self):
-    delay = 3 # seconds
-    elem = WebDriverWait(self.driver, delay).until(expected_conditions.presence_of_element_located((By.XPATH, "//ul[@class='content-list issuable-list issues-list']/li")))
-    print(">>>>elem: ", elem)
-    elems = self.driver.find_elements(By.XPATH, "//div[@class='issuable-list-container']/ul/li")
-    for x in elems:
-      tag_a = x.find_element(By.XPATH, "//a[@class='gl-link issue-title-text']")
-      print(">>>>tag_a: ", tag_a)
-      url = tag_a.get_attribute("href")
-      print(">>>>url: ", url)
-      iss_number = url[url.rfind("/") + 1:]
-      print(">>>>iss Number: ", iss_number)
-      self.create_test_issue(iss_number)
+    a_assign_to_me_link.click() # Assign issue test to QA
+    self.driver.find_element(By.XPATH, "//button[@type='submit']").click() # Create test Issue
+    issue_test_url = self.driver.current_url
+    issue_test_number = issue_test_url[issue_test_url.rfind("/") + 1:]
+    file_name = "{0}-{1}-{2}".format(TEST_ISSUE_FILE_TEMP, iss_number, issue_test_number)
+    print(">>>>New Test Issue url: ", issue_test_url)
+    self.driver.find_element(By.XPATH, "//button[@data-qa-selector='related_issues_plus_button']").click() # Open textbox to input 
+    self.driver.find_element(By.ID, "add-related-issues-form-input").send_keys(iss_number + " ") # Input related issue 
+    self.driver.find_element(By.XPATH, "//button[@type='submit']").click() # Click Add button
+    elem = self.wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//ul[@class='related-items-list content-list']"))) # Wait for finish add related 
+    folder_name = TEST_ISSUE_FOLDER_TEMP + iss_number
+    path = self.create_testcase_file(iss_number, project, folder_name, file_name)
+    return issue_test_url, path
 
-  
+  def get_gitlab_issue_info(self, project, new_issue_url):
+    delay = 3 # seconds
+    try:
+      elem = self.wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//ul[@class='content-list issuable-list issues-list']/li")))
+      print(">>>>elem: ", elem)
+      elems = self.driver.find_elements(By.XPATH, "//div[@class='issuable-list-container']/ul/li")
+      for x in elems:
+        tag_a = x.find_element(By.XPATH, "//a[@class='gl-link issue-title-text']")
+        print(">>>>tag_a: ", tag_a)
+        issue_url = tag_a.get_attribute("href")
+        print(">>>>url: ", issue_url)
+        iss_number = issue_url[issue_url.rfind("/") + 1:]
+        print(">>>>iss Number: ", iss_number)
+
+        # # create test issue
+        # issue_test_url, path = self.create_test_issue(iss_number, project, new_issue_url)
+        # issue_test_number = issue_test_url[issue_test_url.rfind("/") + 1:]
+        
+        # update main issue
+        # delay = 10
+        self.driver.get(issue_url)
+        elem = self.wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[@data-qa-selector='edit_link']")))
+        self.driver.find_element(By.XPATH, "//button[@data-qa-selector='edit_link']").click() # Open textbox to input 
+        elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//input[@aria-label='Search labels']")))
+        # elem = self.wait.until(expected_conditions.presence_of_element_located((By.ID, "__BVID__263")))
+        # self.driver.find_element(By.ID, "__BVID__263").click()
+        # self.driver.find_element(By.ID, "__BVID__263").send_keys("Need to")
+        # self.driver.find_element(By.XPATH, "//input[@data-qa-selector='dropdown_input_field']").click()
+        elem_find_label = self.driver.find_element(By.XPATH, "//input[@aria-label='Search labels']")
+        elem_find_label.click()
+        elem_find_label.send_keys("Need to")
+
+        elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
+        elem_dropdown = self.driver.find_element(By.XPATH, "//button[@class='dropdown-item is-focused']")
+        elem_dropdown.click()
+
+        elem_find_label.click()
+        elem_find_label.send_keys("Test case")
+
+        elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
+        elem_dropdown = self.driver.find_element(By.XPATH, "//button[@class='dropdown-item is-focused']")
+        elem_dropdown.click()
+
+        elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@title='Edit title and description']")))
+        elem_edit = self.driver.find_element(By.XPATH, "//button[@title='Edit title and description']")
+        elem_edit.click()
+
+        # # update db
+        # item = GitLab_Issue_Obj(0, project, "Created", path, issue_test_url, issue_test_number, iss_number, issue_url)
+        # issue_list.append(item)
+    except TimeoutException as ex:
+      print("Exception has been thrown. " + str(ex.msg))
+
+  def collect_gitlab_issues(self):
+    for proj_url in project_links:
+      print(proj_url[0])
+      print(proj_url[1])
+      self.driver.get(proj_url[0])
+      self.get_gitlab_issue_info(proj_url[1], proj_url[2])
 
   def test_gitlabsignin(self):
     print("2")
-    self.driver.get("https://git.iptp.net/users/sign_in")
+    self.driver.get(sign_in_url)
     self.driver.set_window_size(1047, 652)
     self.driver.find_element(By.ID, "user_login").send_keys(GITLAB_USERNAME)
     self.driver.find_element(By.ID, "user_password").send_keys(GITLAB_PASSWORD)
     submit_ele = self.driver.find_element(By.XPATH, "//button[@type='submit']")
-    print(">>", submit_ele)
     submit_ele.click()
-    self.driver.get("https://git.iptp.net/xm/xm-web/-/issues/?sort=updated_desc&state=opened&label_name%5B%5D=Need%20to%20test&first_page_size=20")
-    # self.driver.set_window_size(1047, 652)
-    self.find_element()
+    self.collect_gitlab_issues()
+    sqlite.save(issue_list) # Save to db
     self.driver.close()
 
-  # def test_gitlabsignin2(self):
-  #   print("3")
-  #   self.driver.get("https://git.iptp.net/xm/xm-web/-/issues/?sort=updated_desc&state=opened&label_name%5B%5D=Need%20to%20test&first_page_size=20")
-  #   self.driver.set_window_size(1047, 652)
-  #   # print(">>", submit_ele)
-  #   # submit_ele.click()
-  #   self.driver.close()
-  
+  # def test_create_db(self):
+  #   print("test_create_db")
+  #   playlist = []
+  #   sqlite.initTable(playlist)

@@ -64,13 +64,13 @@ def initTable(lst_issue):
 
     conn.close()
     
-def getListIssue():
+def getListIssue(criteria):
     try:
         conn = sqlite3.connect('gitlab_issue.db')
         print("Opened database successfully")
 
         cursor = conn.execute("""SELECT id, project, path, test_state, issue_test_url, issue_test_number, issue_number, issue_url 
-                              from ISSUE""")
+                              from ISSUE """ + criteria)
         data = []
         for row in cursor:
             print("project = ", row[1])

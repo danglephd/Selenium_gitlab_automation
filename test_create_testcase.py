@@ -24,7 +24,8 @@ project_links = [
                  ["https://git.iptp.net/erp/erp-server/-/issues/?label_name%5B%5D=Need%20to%20test", "erp-server", "https://git.iptp.net/erp/erp-server/-/issues/new"]
                 ]
 sign_in_url = "https://git.iptp.net/users/sign_in"
-issue_list = []
+issue_obj_list = []
+issue_link_list = []
 
 try:
   load_dotenv()
@@ -42,7 +43,7 @@ except KeyError:
 
 class TestGitlab():
   def setup_method(self, method):
-    delay = 3 # seconds
+    delay = 5 # seconds
     self.driver = webdriver.Chrome()
     self.wait = WebDriverWait(self.driver, delay)
     self.vars = {}
@@ -134,22 +135,33 @@ class TestGitlab():
   def get_gitlab_issue_info(self, project, new_issue_url):
     try:
       elem = self.wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//ul[@class='content-list issuable-list issues-list']/li")))
-      print(">>>>elem: ", elem)
+      # print(">>>>elem: ", elem)
       elems = self.driver.find_elements(By.XPATH, "//div[@class='issuable-list-container']/ul/li")
-      for x in elems:
-        tag_a = x.find_element(By.XPATH, "//a[@class='gl-link issue-title-text']")
-        print(">>>>tag_a: ", tag_a)
-        issue_url = tag_a.get_attribute("href")
-        print(">>>>url: ", issue_url)
-        iss_number = issue_url[issue_url.rfind("/") + 1:]
-        print(">>>>iss Number: ", iss_number)
-
+      print(">>>>elems: ", elems)
+      for li in elems:
+        print('>>>li', li)
+        att = li.get_attribute("data-qa-issuable-title")
+        print('>>>att li', att)
+        tag_a_s = li.find_elements(By.XPATH, "//a[@class='gl-link issue-title-text']")
+        # tag_a = x.find_elements_by_tag_name('a')
+        for tag_a in tag_a_s:
+          print(">>>>tag_a: ", tag_a)
+          issue_url = tag_a.get_attribute("href")
+          # issue_text = tag_a.get_attribute("text")
+          print(">>>>url: ", issue_url)
+          # print(">>>>text: ", issue_text)
+          iss_number = issue_url[issue_url.rfind("/") + 1:]
+          print(">>>>iss Number: ", iss_number)
+          issue_link_list.append([iss_number, issue_url])
+        break # stop run over the li tags
+      
+      for iss_number_item, issue_url_item in issue_link_list:
         # # create test issue
-        issue_test_url, path = self.create_test_issue_and_file(iss_number, project, new_issue_url)
+        issue_test_url, path = self.create_test_issue_and_file(iss_number_item, project, new_issue_url)
         issue_test_number = issue_test_url[issue_test_url.rfind("/") + 1:]
         
         # update main issue
-        self.driver.get(issue_url)
+        self.driver.get(issue_url_item)
         elem = self.wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[@data-qa-selector='edit_link']")))
         self.driver.find_element(By.XPATH, "//button[@data-qa-selector='edit_link']").click() # Open textbox to input 
         elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//input[@aria-label='Search labels']")))
@@ -157,14 +169,22 @@ class TestGitlab():
         elem_find_label.click()
 
         elem_find_label.send_keys("Test case")
-        elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
-        elem.click()
+        elem_find_label.send_keys(Keys.TAB)
+        elem_find_label.send_keys(Keys.TAB)
+        elem_find_label.send_keys(Keys.SPACE)
+        # elem_testcase = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
+        # time.sleep(3)
+        # elem_testcase.click()
         # elem_dropdown = self.driver.find_element(By.XPATH, "//button[@class='dropdown-item is-focused']")
         # elem_dropdown.click()
 
         elem_find_label.send_keys("Need to ")
-        elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
-        elem.click()
+        elem_find_label.send_keys(Keys.TAB)
+        elem_find_label.send_keys(Keys.TAB)
+        elem_find_label.send_keys(Keys.SPACE)
+        # elem_needtotest = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
+        # time.sleep(5)
+        # elem_needtotest.click()
         # elem_dropdown = self.driver.find_element(By.XPATH, "//button[@class='dropdown-item is-focused']")
         # elem_dropdown.click()
 
@@ -174,7 +194,7 @@ class TestGitlab():
 
         # # update db
         item = GitLab_Issue_Obj(0, project, "Created", path, issue_test_url, issue_test_number, iss_number, issue_url)
-        issue_list.append(item)
+        issue_obj_list.append(item)
     except TimeoutException as ex:
       print("Exception has been thrown. " + str(ex.msg))
 
@@ -198,7 +218,7 @@ class TestGitlab():
     print("2")
     self.gitlabsignin()
     self.collect_gitlab_issues()
-    sqlite.save(issue_list) # Save to db
+    sqlite.save(issue_obj_list) # Save to db
     self.driver.close()
 
   # def test_create_db(self):

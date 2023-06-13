@@ -31,7 +31,6 @@ def save(gitLab_issue_obj):
     conn = sqlite3.connect('gitlab_issue.db')
     print("Opened database successfully")
 
-    print("Insert playlist to DB")
     for item in gitLab_issue_obj:
         print(">>item", item.project, item.path, item.test_state, item.issue_test_url, item.issue_test_number, item.issue_number, item.issue_url)
         conn.execute("""INSERT INTO ISSUE (project, path, test_state, issue_test_url, issue_test_number, issue_number, issue_url) 
@@ -52,7 +51,6 @@ def initTable(lst_issue):
     conn.execute("DELETE FROM ISSUE")
     conn.commit()
     
-    print("Insert playlist to DB")
     for item in lst_issue:
         print(">>item", item.project, item.path, item.test_state, item.issue_test_url, item.issue_test_number, item.issue_number, item.issue_url)
         conn.execute("""INSERT INTO ISSUE (project, path, test_state, issue_test_url, issue_test_number, issue_number, issue_url) 

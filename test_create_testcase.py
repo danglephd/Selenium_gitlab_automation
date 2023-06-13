@@ -176,12 +176,6 @@ class TestGitlab():
         # elem_dropdown.click()
 
         elem_find_label.send_keys("Need to ")
-        # time.sleep(1)
-        # elem_find_label.send_keys(Keys.TAB)
-        # time.sleep(1)
-        # elem_find_label.send_keys(Keys.TAB)
-        # time.sleep(1)
-        # elem_find_label.send_keys(Keys.SPACE)
         elem_needtotest = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
         time.sleep(3)
         elem_needtotest.send_keys(Keys.SPACE)

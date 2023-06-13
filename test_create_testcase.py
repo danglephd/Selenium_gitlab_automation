@@ -56,23 +56,6 @@ class TestGitlab():
   def update_result(self, iss_number):
     self.driver.get("https://docs.google.com/spreadsheets/d/1IATFgzFi9-t5bwlzXBL0l8HdWvyGIkLK/edit?usp=sharing&ouid=111105249960062423142&rtpof=true&sd=true")
 
-  # def test_create_testcase_file(self):
-  #   print("test_create_db")
-    
-  #   for proj_url in project_links:
-  #     print(">>>", proj_url[0])
-  #     print(">>>>>", proj_url[1])
-  #     iss_number = "111", 
-  #     project = proj_url[1], 
-  #     folder_name = "{0}{1}".format(TEST_ISSUE_TEMP, iss_number[0]), 
-  #     file_name = "{0}-{1}-{2}".format(TEST_ISSUE_FILE_TEMP, iss_number[0], "123")
-  #     # folder_name = "{0}{1}".format(TEST_ISSUE_TEMP, "".join(iss_number + "")), 
-  #     # file_name = "{0}-{1}-{2}".format(TEST_ISSUE_FILE_TEMP, "".join(iss_number + ""), 123)
-  #     print(">>aaa>>", folder_name[0])
-  #     print(">>bbb>>", file_name)
-
-  #     self.create_testcase_file(iss_number, project, folder_name[0], file_name)
-
   def create_testcase_file(self, iss_number, project, folder_name, file_name):
     print("create_testcase_file", iss_number, project, folder_name, file_name)
     path_dst_file_tmp = "D:\\Testcase\\RPA\\{0}\\{1}\\{2}.xlsx"

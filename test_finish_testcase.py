@@ -52,12 +52,9 @@ class TestFinishGitlab():
   def teardown_method(self, method):
     self.driver.quit()
     print("3nd")
-  
-  def update_result(self, iss_number):
-    self.driver.get("https://docs.google.com/spreadsheets/d/1IATFgzFi9-t5bwlzXBL0l8HdWvyGIkLK/edit?usp=sharing&ouid=111105249960062423142&rtpof=true&sd=true")
 
   def update_gitlab_test_issues(self, test_issue_url, project, test_file_path):
-    print("update_gitlab_test_issues", test_issue_url, project, test_file_path)
+    # print("update_gitlab_test_issues", test_issue_url, project, test_file_path)
     self.driver.get(test_issue_url)
     self.driver.set_window_size(1047, 652)
     issue_test_desc = """Test Pass.
@@ -84,8 +81,7 @@ Please check the attach file for test result detail.
       print("Remove label wf:QA, Exception: " + str(ex.msg))
 
   def update_gitlab_issues(self, issue_url_item, id):
-    print("update_gitlab_issues", issue_url_item, id)
-    
+    # print("update_gitlab_issues", issue_url_item, id)
     # update main issue
     self.driver.get(issue_url_item)
     time.sleep(3)
@@ -99,11 +95,6 @@ Please check the attach file for test result detail.
     elem_testcase = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
     time.sleep(1)
     elem_testcase.send_keys(Keys.SPACE)
-
-    # elem_find_label.send_keys("wf:QA")
-    # elem_testcase = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
-    # time.sleep(1)
-    # elem_testcase.send_keys(Keys.SPACE)
 
     elem_find_label.send_keys("wf:Ready_for_UAT")
     elem_testcase = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
@@ -123,52 +114,12 @@ SET test_state = 'Done'
 WHERE id = {0};
 """.format(id)
 
-  def update_file_testcase(self, path, iss_test_number, issue_desc, test_scenario):
-    print("Update file testcase", path)
-    
-    #load excel file
-    workbook = load_workbook(filename=path)
-    
-    #open workbook
-    sheet = workbook.active
-    
-    #modify the desired cell
-    sheet["C1"] = iss_test_number
-    sheet["F1"] = issue_desc
-    sheet["B14"] = test_scenario
-    
-    #save the file
-    workbook.save(path)
-
-
-  def create_test_issue_and_file(self, iss_number, project, new_issue_url):
-    issue_test_name = TEST_ISSUE_TEMP + iss_number
-    issue_test_desc = TEST_ISSUE_DESC_TEMP + " #" + iss_number
-    self.driver.get(new_issue_url)
-    self.driver.find_element(By.ID, "issue_title").send_keys(issue_test_name)
-    self.driver.find_element(By.ID, "issue_description").send_keys(issue_test_desc)
-    a_assign_to_me_link = self.driver.find_element(By.XPATH, "//a[@data-qa-selector='assign_to_me_link']")
-    a_assign_to_me_link.click() # Assign issue test to QA
-    self.driver.find_element(By.XPATH, "//button[@type='submit']").click() # Create test Issue
-    issue_test_url = self.driver.current_url
-    issue_test_number = issue_test_url[issue_test_url.rfind("/") + 1:]
-    file_name = "{0}-{1}-{2}".format(TEST_ISSUE_FILE_TEMP, iss_number, issue_test_number)
-    print(">>>>New Test Issue url: ", issue_test_url)
-    self.driver.find_element(By.XPATH, "//button[@data-qa-selector='related_issues_plus_button']").click() # Open textbox to input 
-    self.driver.find_element(By.ID, "add-related-issues-form-input").send_keys(iss_number + " ") # Input related issue 
-    self.driver.find_element(By.XPATH, "//button[@type='submit']").click() # Click Add button
-    elem = self.wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//ul[@class='related-items-list content-list']"))) # Wait for finish add related 
-    folder_name = TEST_ISSUE_FOLDER_TEMP + iss_number
-    path = self.create_testcase_file(iss_number, project, folder_name, file_name)
-    self.update_file_testcase(path, issue_test_number, issue_test_desc, "")
-    return issue_test_url, path
-
   def collect_finish_gitlab_issues(self):
     criteria = "WHERE test_state LIKE 'Finish'"
     self.issue_list = sqlite.getListIssue(criteria)
 
   def gitlabsignin(self):
-    print("gitlabsignin")
+    # print("gitlabsignin")
     self.driver.get(sign_in_url)
     self.driver.set_window_size(1047, 652)
     self.driver.find_element(By.ID, "user_login").send_keys(GITLAB_USERNAME)
@@ -177,10 +128,10 @@ WHERE id = {0};
     submit_ele.click()
 
   def test_finish_testcase(self):
-    print("2")
+    # print("2")
     self.gitlabsignin()
     self.collect_finish_gitlab_issues()
-    query_lst = []
+    # query_lst = []
     for row in self.issue_list:
       # id, project, path, test_state, issue_test_url, issue_test_number, issue_number, issue_url
       self.update_gitlab_test_issues(test_issue_url=row.issue_test_url, project=row.project, test_file_path=row.path)

@@ -143,7 +143,7 @@ class TestGitlab():
       print("Exception has been thrown. " + str(ex.msg))
 
 
-  def remove_label_testcase(self):
+  def remove_label_needtotest(self):
     try:
       elem_needtotest = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//span[@data-qa-label-name='Need to test']/button")))
       elem_needtotest.click()
@@ -183,7 +183,7 @@ class TestGitlab():
       elem_edit.click()
 
       time.sleep(1)
-      self.remove_label_testcase()
+      self.remove_label_needtotest()
 
       # # update db
       item = GitLab_Issue_Obj(0, project_item, "Created", path, issue_test_url, issue_test_number, iss_number_item, issue_url_item)

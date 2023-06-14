@@ -79,16 +79,18 @@ class TestFinishGitlab():
     self.driver.set_window_size(1047, 652)
     issue_test_desc = """Test Pass.
 
-      Please check the attach file for test result detail.
+Please check the attach file for test result detail.
 
-      """
+"""
     self.driver.find_element(By.ID, "note-body").send_keys(issue_test_desc)
     bt_attach_file = self.driver.find_element(By.XPATH, "//button[@title='Attach a file or image']")
     bt_attach_file.click() # Attach file
+    time.sleep(1)
     pyautogui.write(test_file_path) 
     pyautogui.press('enter')
 
-    elem = self.wait.until(expected_conditions.element_to_be_clickable((By.ID, "__BVID__175__BV_button_")))
+    time.sleep(1)
+    elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='btn btn-confirm btn-md gl-button split-content-button']")))
     elem.click()
 
 

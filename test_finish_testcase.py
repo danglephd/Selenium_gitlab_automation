@@ -56,23 +56,6 @@ class TestFinishGitlab():
   def update_result(self, iss_number):
     self.driver.get("https://docs.google.com/spreadsheets/d/1IATFgzFi9-t5bwlzXBL0l8HdWvyGIkLK/edit?usp=sharing&ouid=111105249960062423142&rtpof=true&sd=true")
 
-  # def test_create_testcase_file(self):
-  #   print("test_create_db")
-    
-  #   for proj_url in project_links:
-  #     print(">>>", proj_url[0])
-  #     print(">>>>>", proj_url[1])
-  #     iss_number = "111", 
-  #     project = proj_url[1], 
-  #     folder_name = "{0}{1}".format(TEST_ISSUE_TEMP, iss_number[0]), 
-  #     file_name = "{0}-{1}-{2}".format(TEST_ISSUE_FILE_TEMP, iss_number[0], "123")
-  #     # folder_name = "{0}{1}".format(TEST_ISSUE_TEMP, "".join(iss_number + "")), 
-  #     # file_name = "{0}-{1}-{2}".format(TEST_ISSUE_FILE_TEMP, "".join(iss_number + ""), 123)
-  #     print(">>aaa>>", folder_name[0])
-  #     print(">>bbb>>", file_name)
-
-  #     self.create_testcase_file(iss_number, project, folder_name[0], file_name)
-
   def update_gitlab_test_issues(self, test_issue_url, project, test_file_path):
     print("update_gitlab_test_issues", test_issue_url, project, test_file_path)
     self.driver.get(test_issue_url)
@@ -93,25 +76,52 @@ Please check the attach file for test result detail.
     elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='btn btn-confirm btn-md gl-button split-content-button']")))
     elem.click()
 
+  def remove_label_qa(self):
+    try:
+      elem_qa = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//span[@data-qa-label-name='wf:QA']/button")))
+      elem_qa.click()
+    except Exception as ex:
+      print("Remove label wf:QA, Exception: " + str(ex.msg))
 
-  def update_gitlab_issues(self, iss_number, project, folder_name, file_name):
-    print("update_gitlab_issues", iss_number, project, folder_name, file_name)
-    # path_dst_file_tmp = "D:\\Testcase\\RPA\\{0}\\{1}\\{2}.xlsx"
-    # path_dst_folder_tmp = "D:\\Testcase\\RPA\\{0}\\{1}"
-    # path_src = ".\\TEMPLATE\\Testcase-template-{0}.xlsx"
-    # src = str(path_src.format(project)), 
-    # path_file_dst = str(path_dst_file_tmp.format(project, folder_name, "".join(file_name)))
-    # path_folder_dst = str(path_dst_folder_tmp.format(project, folder_name))
-    # print(src[0], path_file_dst)
-
-    # if os.path.exists(path_folder_dst):
-    #   print("Folder is exist: ", path_folder_dst)
-    # else:
-    #   print("Folder is not exist!", path_folder_dst)
-    #   os.makedirs(path_folder_dst)
-    # shutil.copy(src[0], path_file_dst)
+  def update_gitlab_issues(self, issue_url_item, id):
+    print("update_gitlab_issues", issue_url_item, id)
     
-    # return path_file_dst
+    # update main issue
+    self.driver.get(issue_url_item)
+    time.sleep(3)
+    elem = self.wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[@data-qa-selector='edit_link']")))
+    self.driver.find_element(By.XPATH, "//button[@data-qa-selector='edit_link']").click() # Open textbox to input 
+    elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//input[@aria-label='Search labels']")))
+    elem_find_label = self.driver.find_element(By.XPATH, "//input[@aria-label='Search labels']")
+    elem_find_label.click()
+
+    elem_find_label.send_keys("Test Pass")
+    elem_testcase = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
+    time.sleep(1)
+    elem_testcase.send_keys(Keys.SPACE)
+
+    # elem_find_label.send_keys("wf:QA")
+    # elem_testcase = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
+    # time.sleep(1)
+    # elem_testcase.send_keys(Keys.SPACE)
+
+    elem_find_label.send_keys("wf:Ready_for_UAT")
+    elem_testcase = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
+    time.sleep(1)
+    elem_testcase.send_keys(Keys.SPACE)
+
+    elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@data-qa-selector='close_labels_dropdown_button']")))
+    elem_close_asssign_label = self.driver.find_element(By.XPATH, "//button[@data-qa-selector='close_labels_dropdown_button']")
+    elem_close_asssign_label.click()
+
+    time.sleep(1)
+    self.remove_label_qa()
+    
+    # # return query
+    return """UPDATE ISSUE
+SET test_state = 'Done'
+WHERE id = {0};
+""".format(id)
 
   def update_file_testcase(self, path, iss_test_number, issue_desc, test_scenario):
     print("Update file testcase", path)
@@ -153,53 +163,6 @@ Please check the attach file for test result detail.
     self.update_file_testcase(path, issue_test_number, issue_test_desc, "")
     return issue_test_url, path
 
-  def get_gitlab_issue_info(self, project, new_issue_url):
-    try:
-      elem = self.wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//ul[@class='content-list issuable-list issues-list']/li")))
-      print(">>>>elem: ", elem)
-      elems = self.driver.find_elements(By.XPATH, "//div[@class='issuable-list-container']/ul/li")
-      for x in elems:
-        tag_a = x.find_element(By.XPATH, "//a[@class='gl-link issue-title-text']")
-        print(">>>>tag_a: ", tag_a)
-        issue_url = tag_a.get_attribute("href")
-        print(">>>>url: ", issue_url)
-        iss_number = issue_url[issue_url.rfind("/") + 1:]
-        print(">>>>iss Number: ", iss_number)
-
-        # # create test issue
-        issue_test_url, path = self.create_test_issue_and_file(iss_number, project, new_issue_url)
-        issue_test_number = issue_test_url[issue_test_url.rfind("/") + 1:]
-        
-        # update main issue
-        self.driver.get(issue_url)
-        elem = self.wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[@data-qa-selector='edit_link']")))
-        self.driver.find_element(By.XPATH, "//button[@data-qa-selector='edit_link']").click() # Open textbox to input 
-        elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//input[@aria-label='Search labels']")))
-        elem_find_label = self.driver.find_element(By.XPATH, "//input[@aria-label='Search labels']")
-        elem_find_label.click()
-
-        elem_find_label.send_keys("Test case")
-        elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
-        elem.click()
-        # elem_dropdown = self.driver.find_element(By.XPATH, "//button[@class='dropdown-item is-focused']")
-        # elem_dropdown.click()
-
-        elem_find_label.send_keys("Need to ")
-        elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
-        elem.click()
-        # elem_dropdown = self.driver.find_element(By.XPATH, "//button[@class='dropdown-item is-focused']")
-        # elem_dropdown.click()
-
-        elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@title='Edit title and description']")))
-        elem_edit = self.driver.find_element(By.XPATH, "//button[@title='Edit title and description']")
-        elem_edit.click()
-
-        # # update db
-        item = GitLab_Issue_Obj(0, project, "Created", path, issue_test_url, issue_test_number, iss_number, issue_url)
-        issue_list.append(item)
-    except TimeoutException as ex:
-      print("Exception has been thrown. " + str(ex.msg))
-
   def collect_finish_gitlab_issues(self):
     criteria = "WHERE test_state LIKE 'Finish'"
     self.issue_list = sqlite.getListIssue(criteria)
@@ -217,14 +180,11 @@ Please check the attach file for test result detail.
     print("2")
     self.gitlabsignin()
     self.collect_finish_gitlab_issues()
+    query_lst = []
     for row in self.issue_list:
       # id, project, path, test_state, issue_test_url, issue_test_number, issue_number, issue_url
       self.update_gitlab_test_issues(test_issue_url=row.issue_test_url, project=row.project, test_file_path=row.path)
-      self.update_gitlab_issues()
-    sqlite.save(issue_list) # Save to db
+      # query_lst.append(self.update_gitlab_issues(issue_url_item=row.issue_url, id=row.id))
+      query = self.update_gitlab_issues(issue_url_item=row.issue_url, id=row.id)
+      sqlite.executeQuery(query) # Save to db
     self.driver.close()
-
-  # def test_create_db(self):
-  #   print("test_create_db")
-  #   playlist = []
-  #   sqlite.initTable(playlist)

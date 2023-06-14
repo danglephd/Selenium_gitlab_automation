@@ -137,11 +137,18 @@ class TestGitlab():
           print(">>>>iss Number: ", iss_number)
           issue_link_list.append([iss_number, issue_url, project, new_issue_url])
         break # stop run over the li tags
-      
-      print(">>>>issue_link_list: ", issue_link_list)
+      # print(">>>>issue_link_list: ", issue_link_list)
       return 
     except TimeoutException as ex:
       print("Exception has been thrown. " + str(ex.msg))
+
+
+  def remove_label_testcase(self):
+    try:
+      elem_needtotest = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//span[@data-qa-label-name='Need to test']/button")))
+      elem_needtotest.click()
+    except TimeoutException as ex:
+      print("Remove label needtotest, Exception: " + str(ex.msg))
 
   def create_testcase_update_issue_update_db(self):
     for iss_number_item, issue_url_item, project_item, new_issue_url_item in issue_link_list:
@@ -206,23 +213,4 @@ class TestGitlab():
     self.create_testcase_update_issue_update_db()
     sqlite.save(issue_obj_list) # Save to db
     self.driver.close()
-
-
-
-  # def test_example(self):
-  #   print("2")
-  #   self.gitlabsignin()
-  #   self.driver.get("https://git.iptp.net/erp/erp-web/-/issues/195")
-  #   try:
-  #     elem_needtotest = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//span[@data-qa-label-name='Need to test']/button")))
-  #     elem_needtotest.click()
-  #   except TimeoutException as ex:
-  #     print("Exception has been thrown. " + str(ex.msg))
-
-  def remove_label_testcase(self):
-    try:
-      elem_needtotest = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//span[@data-qa-label-name='Need to test']/button")))
-      elem_needtotest.click()
-    except TimeoutException as ex:
-      print("Exception has been thrown. " + str(ex.msg))
 

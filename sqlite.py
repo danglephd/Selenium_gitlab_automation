@@ -62,6 +62,20 @@ def initTable(lst_issue):
 
     conn.close()
     
+def executeQuery(query):
+    try:
+        conn = sqlite3.connect('gitlab_issue.db')
+        print("Opened database successfully")
+        
+        # for query in query_lst:
+        conn.execute(query)
+        conn.commit()
+        
+        print("Operation done successfully")
+        conn.close()
+    except Exception as err:
+        print(f"Unexpected {err=}, {type(err)=}")
+    
 def getListIssue(criteria):
     try:
         conn = sqlite3.connect('gitlab_issue.db')

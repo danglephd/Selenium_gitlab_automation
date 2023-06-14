@@ -135,45 +135,53 @@ class TestGitlab():
           # print(">>>>text: ", issue_text)
           iss_number = issue_url[issue_url.rfind("/") + 1:]
           print(">>>>iss Number: ", iss_number)
-          issue_link_list.append([iss_number, issue_url])
+          issue_link_list.append([iss_number, issue_url, project, new_issue_url])
         break # stop run over the li tags
       
-      for iss_number_item, issue_url_item in issue_link_list:
-        # # create test issue
-        issue_test_url, path = self.create_test_issue_and_file(iss_number_item, project, new_issue_url)
-        issue_test_number = issue_test_url[issue_test_url.rfind("/") + 1:]
-        
-        # update main issue
-        self.driver.get(issue_url_item)
-        elem = self.wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[@data-qa-selector='edit_link']")))
-        self.driver.find_element(By.XPATH, "//button[@data-qa-selector='edit_link']").click() # Open textbox to input 
-        elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//input[@aria-label='Search labels']")))
-        elem_find_label = self.driver.find_element(By.XPATH, "//input[@aria-label='Search labels']")
-        elem_find_label.click()
-
-        elem_find_label.send_keys("Test case")
-        elem_testcase = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
-        time.sleep(3)
-        elem_testcase.send_keys(Keys.SPACE)
-        # elem_dropdown = self.driver.find_element(By.XPATH, "//button[@class='dropdown-item is-focused']")
-        # elem_dropdown.click()
-
-        elem_find_label.send_keys("Need to ")
-        elem_needtotest = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
-        time.sleep(3)
-        elem_needtotest.send_keys(Keys.SPACE)
-        # elem_dropdown = self.driver.find_element(By.XPATH, "//button[@class='dropdown-item is-focused']")
-        # elem_dropdown.click()
-
-        elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@title='Edit title and description']")))
-        elem_edit = self.driver.find_element(By.XPATH, "//button[@title='Edit title and description']")
-        elem_edit.click()
-
-        # # update db
-        item = GitLab_Issue_Obj(0, project, "Created", path, issue_test_url, issue_test_number, iss_number, issue_url)
-        issue_obj_list.append(item)
+      print(">>>>issue_link_list: ", issue_link_list)
+      return 
     except TimeoutException as ex:
       print("Exception has been thrown. " + str(ex.msg))
+
+  def create_testcase_update_issue_update_db(self):
+    for iss_number_item, issue_url_item, project_item, new_issue_url_item in issue_link_list:
+      # # create test issue
+      issue_test_url, path = self.create_test_issue_and_file(iss_number_item, project_item, new_issue_url_item)
+      issue_test_number = issue_test_url[issue_test_url.rfind("/") + 1:]
+      
+      # update main issue
+      self.driver.get(issue_url_item)
+      elem = self.wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[@data-qa-selector='edit_link']")))
+      self.driver.find_element(By.XPATH, "//button[@data-qa-selector='edit_link']").click() # Open textbox to input 
+      elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//input[@aria-label='Search labels']")))
+      elem_find_label = self.driver.find_element(By.XPATH, "//input[@aria-label='Search labels']")
+      elem_find_label.click()
+
+      elem_find_label.send_keys("Test case")
+      elem_testcase = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
+      time.sleep(1)
+      elem_testcase.send_keys(Keys.SPACE)
+      # elem_dropdown = self.driver.find_element(By.XPATH, "//button[@class='dropdown-item is-focused']")
+      # elem_dropdown.click()
+
+      # elem_find_label.send_keys("Need to ")
+      # elem_needtotest = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
+      # time.sleep(3)
+      # elem_needtotest.send_keys(Keys.SPACE)
+      # # elem_dropdown = self.driver.find_element(By.XPATH, "//button[@class='dropdown-item is-focused']")
+      # # elem_dropdown.click()
+
+      elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@title='Edit title and description']")))
+      elem_edit = self.driver.find_element(By.XPATH, "//button[@title='Edit title and description']")
+      elem_edit.click()
+
+      time.sleep(1)
+      self.remove_label_testcase()
+
+      # # update db
+      item = GitLab_Issue_Obj(0, project_item, "Created", path, issue_test_url, issue_test_number, iss_number_item, issue_url_item)
+      issue_obj_list.append(item)
+  
 
   def collect_gitlab_issues(self):
     for proj_url in project_links:
@@ -195,10 +203,26 @@ class TestGitlab():
     print("2")
     self.gitlabsignin()
     self.collect_gitlab_issues()
+    self.create_testcase_update_issue_update_db()
     sqlite.save(issue_obj_list) # Save to db
     self.driver.close()
 
-  # def test_create_db(self):
-  #   print("test_create_db")
-  #   playlist = []
-  #   sqlite.initTable(playlist)
+
+
+  # def test_example(self):
+  #   print("2")
+  #   self.gitlabsignin()
+  #   self.driver.get("https://git.iptp.net/erp/erp-web/-/issues/195")
+  #   try:
+  #     elem_needtotest = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//span[@data-qa-label-name='Need to test']/button")))
+  #     elem_needtotest.click()
+  #   except TimeoutException as ex:
+  #     print("Exception has been thrown. " + str(ex.msg))
+
+  def remove_label_testcase(self):
+    try:
+      elem_needtotest = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//span[@data-qa-label-name='Need to test']/button")))
+      elem_needtotest.click()
+    except TimeoutException as ex:
+      print("Exception has been thrown. " + str(ex.msg))
+

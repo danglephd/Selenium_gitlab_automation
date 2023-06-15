@@ -12,6 +12,8 @@ An project use Selenium to auto generate gitlab test case
 
 # How to run it
 
+## Setup
+
 - Install virtualenv (optional)
 ```bash
 python3 -m virtualenv .   
@@ -32,6 +34,13 @@ Scripts\activate
 ```bash
 pip install -r requirements.txt
 ```
+
+## Run
+- Run pytest on file [rpa_gitlab_qa.py](rpa_gitlab_qa.py)
+```bash
+pytest .\rpa_gitlab_qa.py
+```
+- 
 
 ### What is included on this template?
 

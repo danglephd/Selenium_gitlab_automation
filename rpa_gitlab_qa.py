@@ -16,6 +16,7 @@ import shutil
 import sqlite
 from sqlite import GitLab_Issue_Obj
 from openpyxl import load_workbook
+import pyautogui
 
 project_links = [
                  ["https://git.iptp.net/xm/xm-web/-/issues/?label_name%5B%5D=Need%20to%20test", 'xm-web', "https://git.iptp.net/xm/xm-web/-/issues/new"],
@@ -26,6 +27,7 @@ project_links = [
 sign_in_url = "https://git.iptp.net/users/sign_in"
 issue_obj_list = []
 issue_link_list = []
+issue_list = []
 
 try:
   load_dotenv()
@@ -142,7 +144,6 @@ class TestRPA_GitlabQA():
     except TimeoutException as ex:
       print("Exception has been thrown. " + str(ex.msg))
 
-
   def remove_label_needtotest(self):
     try:
       elem_needtotest = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//span[@data-qa-label-name='Need to test']/button")))
@@ -193,13 +194,82 @@ class TestRPA_GitlabQA():
         )
       issue_obj_list.append(item)
   
-
   def collect_gitlab_issues(self):
     for proj_url in project_links:
       print(proj_url[0])
       print(proj_url[1])
       self.driver.get(proj_url[0])
       self.get_gitlab_issue_info(proj_url[1], proj_url[2])
+
+# Finish processes
+
+  def remove_label_qa(self):
+    try:
+      elem_qa = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//span[@data-qa-label-name='wf:QA']/button")))
+      elem_qa.click()
+    except Exception as ex:
+      print("Remove label wf:QA, Exception: " + str(ex.msg))
+
+  def collect_finish_gitlab_issues(self):
+    criteria = "WHERE test_state LIKE 'Finish'"
+    self.issue_list = sqlite.getListIssue(criteria)
+
+  def update_gitlab_test_issues(self, test_issue_url, project, test_file_path):
+    # print("update_gitlab_test_issues", test_issue_url, project, test_file_path)
+    self.driver.get(test_issue_url)
+    self.driver.set_window_size(1047, 652)
+    issue_test_desc = """Test Pass.
+
+Please check the attach file for test result detail.
+
+"""
+    self.driver.find_element(By.ID, "note-body").send_keys(issue_test_desc)
+    bt_attach_file = self.driver.find_element(By.XPATH, "//button[@title='Attach a file or image']")
+    bt_attach_file.click() # Attach file
+    time.sleep(1)
+    pyautogui.write(test_file_path) 
+    pyautogui.press('enter')
+
+    time.sleep(1)
+    elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='btn btn-confirm btn-md gl-button split-content-button']")))
+    elem.click()
+
+  def update_gitlab_issues(self, issue_url_item, id):
+    # print("update_gitlab_issues", issue_url_item, id)
+    # update main issue
+    self.driver.get(issue_url_item)
+    time.sleep(3)
+    elem = self.wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[@data-qa-selector='edit_link']")))
+    self.driver.find_element(By.XPATH, "//button[@data-qa-selector='edit_link']").click() # Open textbox to input 
+    elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//input[@aria-label='Search labels']")))
+    elem_find_label = self.driver.find_element(By.XPATH, "//input[@aria-label='Search labels']")
+    elem_find_label.click()
+
+    elem_find_label.send_keys("Test Pass")
+    elem_testcase = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
+    time.sleep(1)
+    elem_testcase.send_keys(Keys.SPACE)
+
+    elem_find_label.send_keys("wf:Ready_for_UAT")
+    elem_testcase = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
+    time.sleep(1)
+    elem_testcase.send_keys(Keys.SPACE)
+
+    elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@data-qa-selector='close_labels_dropdown_button']")))
+    elem_close_asssign_label = self.driver.find_element(By.XPATH, "//button[@data-qa-selector='close_labels_dropdown_button']")
+    elem_close_asssign_label.click()
+
+    time.sleep(1)
+    self.remove_label_qa()
+    
+    # # return query
+    return """UPDATE ISSUE
+SET test_state = 'Done'
+WHERE id = {0};
+""".format(id)
+  
+# <<<<
+
 
   def gitlabsignin(self):
     print("gitlabsignin")
@@ -212,12 +282,25 @@ class TestRPA_GitlabQA():
 
   def test_rpa_gitlab_qa(self):
     self.create_testcase()
+    self.finish_testcase()
 
   def create_testcase(self):
-    print("2")
+    print("RPA create_testcase")
     self.gitlabsignin()
     self.collect_gitlab_issues()
     self.create_testcase_update_issue_update_db()
     sqlite.save(issue_obj_list) # Save to db
     self.driver.close()
 
+  def finish_testcase(self):
+    print("RPA finish_testcase")
+    self.gitlabsignin()
+    self.collect_finish_gitlab_issues()
+    # query_lst = []
+    for row in self.issue_list:
+      # id, project, path, test_state, issue_test_url, issue_test_number, issue_number, issue_url
+      self.update_gitlab_test_issues(test_issue_url=row.issue_test_url, project=row.project, test_file_path=row.path)
+      # query_lst.append(self.update_gitlab_issues(issue_url_item=row.issue_url, id=row.id))
+      query = self.update_gitlab_issues(issue_url_item=row.issue_url, id=row.id)
+      sqlite.executeQuery(query) # Save to db
+    self.driver.close()

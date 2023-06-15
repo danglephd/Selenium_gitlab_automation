@@ -42,7 +42,7 @@ pytest .\rpa_gitlab_qa.py
 ```
 
 
-### What is included on this template?
+### What is included on this project?
 
 - 🖼️ Libraries:
   * **Selenium**, Selenium with Python [link](https://selenium-python.readthedocs.io/index.html)
@@ -50,3 +50,5 @@ pytest .\rpa_gitlab_qa.py
   * **python-dotenv** python-dotenv [link](https://pypi.org/project/python-dotenv/)
   * **pytest** pytest [link](https://docs.pytest.org/en/7.3.x/)
   * **openpyxl** A Python library to read/write Excel 2010 xlsx/xlsm files [link](https://openpyxl.readthedocs.io/en/stable/)
+- 🐋 Database:
+  * **SQLite**, SQL database engine [link](https://www.sqlite.org/index.html)

@@ -296,13 +296,14 @@ WHERE id = {0};
 
   def finish_testcase(self):
     print("RPA finish_testcase")
-    self.gitlabsignin()
     self.collect_finish_gitlab_issues()
     # query_lst = []
-    for row in self.issue_list:
-      # id, project, path, test_state, issue_test_url, issue_test_number, issue_number, issue_url
-      self.update_gitlab_test_issues(test_issue_url=row.issue_test_url, project=row.project, test_file_path=row.path)
-      # query_lst.append(self.update_gitlab_issues(issue_url_item=row.issue_url, id=row.id))
-      query = self.update_gitlab_issues(issue_url_item=row.issue_url, id=row.id)
-      sqlite.executeQuery(query) # Save to db
+    if(len(self.issue_list) > 0):
+      self.gitlabsignin()
+      for row in self.issue_list:
+        # id, project, path, test_state, issue_test_url, issue_test_number, issue_number, issue_url
+        self.update_gitlab_test_issues(test_issue_url=row.issue_test_url, project=row.project, test_file_path=row.path)
+        # query_lst.append(self.update_gitlab_issues(issue_url_item=row.issue_url, id=row.id))
+        query = self.update_gitlab_issues(issue_url_item=row.issue_url, id=row.id)
+        sqlite.executeQuery(query) # Save to db
     self.driver.close()

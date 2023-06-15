@@ -230,7 +230,7 @@ Please check the attach file for test result detail.
     pyautogui.write(test_file_path) 
     pyautogui.press('enter')
 
-    time.sleep(1)
+    time.sleep(3)
     elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='btn btn-confirm btn-md gl-button split-content-button']")))
     elem.click()
 
@@ -281,7 +281,7 @@ WHERE id = {0};
     submit_ele.click()
 
   def test_rpa_gitlab_qa(self):
-    self.create_testcase()
+    # self.create_testcase()
     self.finish_testcase()
 
   def create_testcase(self):

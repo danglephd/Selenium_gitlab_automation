@@ -40,10 +40,13 @@ pip install -r requirements.txt
 ```bash
 pytest .\rpa_gitlab_qa.py
 ```
-- 
+
 
 ### What is included on this template?
 
-- 🖼️ Templates for starting multiple application types:
-  * **Basic low dependency** Python program (default) [use this template](https://github.com/rochacbruno/python-project-template/generate)
-  * **Flask** with database, admin interface, restapi and authentication [use this template](https://github.com/rochacbruno/flask-project-template/generate).
+- 🖼️ Libraries:
+  * **Selenium**, Selenium with Python [link](https://selenium-python.readthedocs.io/index.html)
+  * **PyAutoGUI**, PyAutoGUI’s documentation! [link](https://pyautogui.readthedocs.io/en/latest/)
+  * **python-dotenv** python-dotenv [link](https://pypi.org/project/python-dotenv/)
+  * **pytest** pytest [link](https://docs.pytest.org/en/7.3.x/)
+  * **openpyxl** A Python library to read/write Excel 2010 xlsx/xlsm files [link](https://openpyxl.readthedocs.io/en/stable/)

@@ -280,8 +280,10 @@ WHERE id = {0};
     submit_ele = self.driver.find_element(By.XPATH, "//button[@type='submit']")
     submit_ele.click()
 
-  def test_rpa_gitlab_qa(self):
-    # self.create_testcase()
+  def test_create_testcase(self):
+    self.create_testcase()
+
+  def test_finish_testcase(self):
     self.finish_testcase()
 
   def create_testcase(self):

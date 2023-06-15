@@ -41,7 +41,7 @@ except KeyError:
   print("Environment variable does not exist", KeyError)
 
 
-class RPA_GitlabQA():
+class TestRPA_GitlabQA():
   def setup_method(self, method):
     delay = 5 # seconds
     self.driver = webdriver.Chrome()
@@ -207,7 +207,7 @@ class RPA_GitlabQA():
     submit_ele = self.driver.find_element(By.XPATH, "//button[@type='submit']")
     submit_ele.click()
 
-  def test_main(self):
+  def test_rpa_gitlab_qa(self):
     self.create_testcase()
 
   def create_testcase(self):

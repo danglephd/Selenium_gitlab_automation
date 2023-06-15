@@ -18,13 +18,7 @@ from sqlite import GitLab_Issue_Obj
 from openpyxl import load_workbook
 import pyautogui
 
-project_links = [
-                 ["https://git.iptp.net/xm/xm-web/-/issues/?label_name%5B%5D=Need%20to%20test", 'xm-web', "https://git.iptp.net/xm/xm-web/-/issues/new"],
-                 ["https://git.iptp.net/andre/xm-api/-/issues/?label_name%5B%5D=Need%20to%20test", "xm-api", "https://git.iptp.net/andre/xm-api/-/issues/new"],
-                 ["https://git.iptp.net/erp/erp-web/-/issues/?label_name%5B%5D=Need%20to%20test", "erp-web", "https://git.iptp.net/erp/erp-web/-/issues/new"],
-                 ["https://git.iptp.net/erp/erp-server/-/issues/?label_name%5B%5D=Need%20to%20test", "erp-server", "https://git.iptp.net/erp/erp-server/-/issues/new"]
-                ]
-sign_in_url = "https://git.iptp.net/users/sign_in"
+# sign_in_url = "https://git.iptp.net/users/sign_in"
 issue_obj_list = []
 issue_link_list = []
 issue_list = []
@@ -37,6 +31,31 @@ try:
   TEST_ISSUE_FOLDER_TEMP = os.environ["TEST_ISSUE_FOLDER_TEMP"]
   TEST_ISSUE_DESC_TEMP = os.environ["TEST_ISSUE_DESC_TEMP"]
   TEST_ISSUE_FILE_TEMP = os.environ["TEST_ISSUE_FILE_TEMP"]
+  
+  SIGN_IN_URL = os.environ["SIGN_IN_URL"]
+  
+  XM_WEB_FIND_ISSUE_URL = os.environ["XM_WEB_FIND_ISSUE_URL"]
+  XM_API_FIND_ISSUE_URL = os.environ["XM_API_FIND_ISSUE_URL"]
+  ERP_WEB_FIND_ISSUE_URL = os.environ["ERP_WEB_FIND_ISSUE_URL"]
+  ERP_SERVER_FIND_ISSUE_URL = os.environ["ERP_SERVER_FIND_ISSUE_URL"]
+  
+  XM_WEB_NEW_ISSUE_URL = os.environ["XM_WEB_NEW_ISSUE_URL"]
+  XM_API_NEW_ISSUE_URL = os.environ["XM_API_NEW_ISSUE_URL"]
+  ERP_WEB_NEW_ISSUE_URL = os.environ["ERP_WEB_NEW_ISSUE_URL"]
+  ERP_SERVER_NEW_ISSUE_URL = os.environ["ERP_SERVER_NEW_ISSUE_URL"]
+
+  XM_WEB_PROJECT = os.environ["XM_WEB_PROJECT"]
+  XM_API_PROJECT = os.environ["XM_API_PROJECT"]
+  ERP_WEB_PROJECT = os.environ["ERP_WEB_PROJECT"]
+  ERP_SERVER_PROJECT = os.environ["ERP_SERVER_PROJECT"]
+
+  project_links = [
+    [XM_WEB_FIND_ISSUE_URL, XM_WEB_PROJECT, XM_WEB_NEW_ISSUE_URL],
+    [XM_API_FIND_ISSUE_URL, XM_API_PROJECT, XM_API_NEW_ISSUE_URL],
+    [ERP_WEB_FIND_ISSUE_URL, ERP_WEB_PROJECT, ERP_WEB_NEW_ISSUE_URL],
+    [ERP_SERVER_FIND_ISSUE_URL, ERP_SERVER_PROJECT, ERP_SERVER_NEW_ISSUE_URL]
+  ]
+
   # print("Environment variable>>> ", TEST_ISSUE_TEMP, TEST_ISSUE_DESC_TEMP)
 
 except KeyError:
@@ -54,9 +73,6 @@ class TestRPA_GitlabQA():
   def teardown_method(self, method):
     self.driver.quit()
     print("3nd")
-  
-  def update_result(self, iss_number):
-    self.driver.get("https://docs.google.com/spreadsheets/d/1IATFgzFi9-t5bwlzXBL0l8HdWvyGIkLK/edit?usp=sharing&ouid=111105249960062423142&rtpof=true&sd=true")
 
   def create_testcase_file(self, iss_number, project, folder_name, file_name):
     print("create_testcase_file", iss_number, project, folder_name, file_name)
@@ -273,7 +289,7 @@ WHERE id = {0};
 
   def gitlabsignin(self):
     print("gitlabsignin")
-    self.driver.get(sign_in_url)
+    self.driver.get(SIGN_IN_URL)
     self.driver.set_window_size(1047, 652)
     self.driver.find_element(By.ID, "user_login").send_keys(GITLAB_USERNAME)
     self.driver.find_element(By.ID, "user_password").send_keys(GITLAB_PASSWORD)

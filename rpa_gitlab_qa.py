@@ -187,7 +187,10 @@ class TestRPA_GitlabQA():
       self.remove_label_needtotest()
 
       # # update db
-      item = GitLab_Issue_Obj(0, project_item, "Created", path, issue_test_url, issue_test_number, iss_number_item, issue_url_item)
+      item = GitLab_Issue_Obj(id=0, project=project_item, path=path, test_state="Created", issue_test_url=issue_test_url, issue_test_number=issue_test_number, issue_number=iss_number_item, issue_url=issue_url_item
+        
+        # 0, project_item, path, "Created", issue_test_url, issue_test_number, iss_number_item, issue_url_item
+        )
       issue_obj_list.append(item)
   
 

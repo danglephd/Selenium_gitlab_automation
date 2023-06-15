@@ -12,7 +12,23 @@ An project use Selenium to auto generate gitlab test case
 
 # How to run it
 
-- Install from [label](requirements.txt)
+- Install virtualenv (optional)
+```bash
+python3 -m virtualenv .   
+```
+- Init venvironment
+```bash
+virtualenv venvironment 
+```
+- If error on use file .ps1, then run:
+```bash
+set-executionpolicy remotesigned
+```
+- Activate environment
+```bash
+Scripts\activate
+```
+- Install from [requirements.txt](requirements.txt)
 ```bash
 pip install -r requirements.txt
 ```

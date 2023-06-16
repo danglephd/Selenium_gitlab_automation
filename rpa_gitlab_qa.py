@@ -17,6 +17,7 @@ import sqlite
 from sqlite import GitLab_Issue_Obj
 from openpyxl import load_workbook
 import pyautogui
+from slack_webhook import *
 
 # sign_in_url = "https://git.iptp.net/users/sign_in"
 issue_obj_list = []
@@ -294,12 +295,6 @@ WHERE id = {0};
     submit_ele = self.driver.find_element(By.XPATH, "//button[@type='submit']")
     submit_ele.click()
 
-  def test_create_testcase(self):
-    self.create_testcase()
-
-  def test_finish_testcase(self):
-    self.finish_testcase()
-
   def create_testcase(self):
     print("RPA create_testcase")
     self.gitlabsignin()
@@ -321,3 +316,16 @@ WHERE id = {0};
         query = self.update_gitlab_issues(issue_url_item=row.issue_url, id=row.id)
         sqlite.executeQuery(query) # Save to db
     self.driver.close()
+
+
+#  Test case 
+  # def test_create_testcase(self):
+  #   self.create_testcase()
+
+  # def test_finish_testcase(self):
+  #   self.finish_testcase()
+
+  def test_notification(self):
+    send_survey(user="AAAA", channel="ADFASDFASD", text="Hello hhskdfjhfk")
+
+# <<<<

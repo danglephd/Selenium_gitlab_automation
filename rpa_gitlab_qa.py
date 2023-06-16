@@ -110,8 +110,7 @@ class TestRPA_GitlabQA():
     #save the file
     workbook.save(path)
 
-
-  def create_test_issue_and_file(self, iss_number, project, new_issue_url):
+  def create_test_issue_and_file(self, iss_number, project, new_issue_url, issue_text_item):
     issue_test_name = TEST_ISSUE_TEMP + iss_number
     issue_test_desc = TEST_ISSUE_DESC_TEMP + " #" + iss_number
     self.driver.get(new_issue_url)
@@ -130,7 +129,7 @@ class TestRPA_GitlabQA():
     elem = self.wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//ul[@class='related-items-list content-list']"))) # Wait for finish add related 
     folder_name = TEST_ISSUE_FOLDER_TEMP + iss_number
     path = self.create_testcase_file(iss_number, project, folder_name, file_name)
-    self.update_file_testcase(path, issue_test_number, issue_test_desc, "")
+    self.update_file_testcase(path, issue_test_number, issue_test_desc, issue_text_item)
     return issue_test_url, path
 
   def get_gitlab_issue_info(self, project, new_issue_url):
@@ -148,12 +147,12 @@ class TestRPA_GitlabQA():
         for tag_a in tag_a_s:
           print(">>>>tag_a: ", tag_a)
           issue_url = tag_a.get_attribute("href")
-          # issue_text = tag_a.get_attribute("text")
+          issue_text = tag_a.get_attribute("text")
           print(">>>>url: ", issue_url)
-          # print(">>>>text: ", issue_text)
+          print(">>>>text: ", issue_text)
           iss_number = issue_url[issue_url.rfind("/") + 1:]
           print(">>>>iss Number: ", iss_number)
-          issue_link_list.append([iss_number, issue_url, project, new_issue_url])
+          issue_link_list.append([iss_number, issue_url, project, new_issue_url, issue_text])
         break # stop run over the li tags
       # print(">>>>issue_link_list: ", issue_link_list)
       return 
@@ -168,9 +167,9 @@ class TestRPA_GitlabQA():
       print("Remove label needtotest, Exception: " + str(ex.msg))
 
   def create_testcase_update_issue_update_db(self):
-    for iss_number_item, issue_url_item, project_item, new_issue_url_item in issue_link_list:
+    for iss_number_item, issue_url_item, project_item, new_issue_url_item, issue_text_item in issue_link_list:
       # # create test issue
-      issue_test_url, path = self.create_test_issue_and_file(iss_number_item, project_item, new_issue_url_item)
+      issue_test_url, path = self.create_test_issue_and_file(iss_number_item, project_item, new_issue_url_item, issue_text_item)
       issue_test_number = issue_test_url[issue_test_url.rfind("/") + 1:]
       
       # update main issue
@@ -285,7 +284,6 @@ WHERE id = {0};
 """.format(id)
   
 # <<<<
-
 
   def gitlabsignin(self):
     print("gitlabsignin")

@@ -60,7 +60,7 @@ try:
   # print("Environment variable>>> ", TEST_ISSUE_TEMP, TEST_ISSUE_DESC_TEMP)
 
 except KeyError:
-  print("Environment variable does not exist", KeyError)
+  print("Main, Environment variable does not exist", KeyError)
 
 
 class TestRPA_GitlabQA():
@@ -326,6 +326,7 @@ WHERE id = {0};
   #   self.finish_testcase()
 
   def test_notification(self):
-    send_survey(user="AAAA", channel="ADFASDFASD", text="Hello hhskdfjhfk")
+    # send_survey(user="AAAA", channel="#gitlab-qa", text="Hello hhskdfjhfk")
+    send_survey(user="AAAA", text="Hello hhskdfjhfk")
 
 # <<<<

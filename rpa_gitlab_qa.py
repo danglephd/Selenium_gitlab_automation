@@ -134,6 +134,7 @@ class TestRPA_GitlabQA():
     return issue_test_url, path
 
   def get_gitlab_issue_info(self, project, new_issue_url):
+    print(">Get Gitlab Issue Information")
     try:
       elem = self.wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//ul[@class='content-list issuable-list issues-list']/li")))
       # print(">>>>elem: ", elem)
@@ -159,13 +160,15 @@ class TestRPA_GitlabQA():
       return 
     except TimeoutException as ex:
       print("Exception has been thrown. " + str(ex.msg))
+      send_survey(user="get", text=""":interrobang::interrobang::interrobang: *Error* on *Get Gitlab Issue Information.* :broken_heart::broken_heart::broken_heart:\nPlease get help from your Administrator.""")
 
-  def remove_label_needtotest(self):
+  def remove_label_needtotest(self, url):
     try:
       elem_needtotest = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//span[@data-qa-label-name='Need to test']/button")))
       elem_needtotest.click()
     except TimeoutException as ex:
       print("Remove label needtotest, Exception: " + str(ex.msg))
+      send_survey(user="remove", text=str.format(""":speech_balloon: *Error* on *Remove* label *Need_to_test*. :anger:\nPlease check this <{0}|issue>.""", url))
 
   def create_testcase_update_issue_update_db(self):
     for iss_number_item, issue_url_item, project_item, new_issue_url_item, issue_text_item in issue_link_list:
@@ -201,7 +204,7 @@ class TestRPA_GitlabQA():
       elem_edit.click()
 
       time.sleep(1)
-      self.remove_label_needtotest()
+      self.remove_label_needtotest(url=issue_url_item)
 
       # # update db
       item = GitLab_Issue_Obj(id=0, project=project_item, path=path, test_state="Created", issue_test_url=issue_test_url, issue_test_number=issue_test_number, issue_number=iss_number_item, issue_url=issue_url_item
@@ -219,12 +222,13 @@ class TestRPA_GitlabQA():
 
 # Finish processes
 
-  def remove_label_qa(self):
+  def remove_label_qa(self, url):
     try:
       elem_qa = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//span[@data-qa-label-name='wf:QA']/button")))
       elem_qa.click()
     except Exception as ex:
       print("Remove label wf:QA, Exception: " + str(ex.msg))
+      send_survey(user="remove", text=str.format(""":speech_balloon: *Error* on *Remove* label *wf:QA*. :anger:\nPlease check this <{0}|issue>.""", url))
 
   def collect_finish_gitlab_issues(self):
     criteria = "WHERE test_state LIKE 'Finish'"
@@ -276,7 +280,7 @@ Please check the attach file for test result detail.
     elem_close_asssign_label.click()
 
     time.sleep(1)
-    self.remove_label_qa()
+    self.remove_label_qa(issue_url_item)
     
     # # return query
     return """UPDATE ISSUE
@@ -327,6 +331,6 @@ WHERE id = {0};
 
   def test_notification(self):
     # send_survey(user="AAAA", channel="#gitlab-qa", text="Hello hhskdfjhfk")
-    send_survey(user="AAAA", text="Hello hhskdfjhfk")
+    send_survey(user="AAAA", text=""":interrobang::interrobang::interrobang: *Error* on *Get Gitlab Issue Information.* :broken_heart::broken_heart::broken_heart:\nPlease get help from your Administrator.""")
 
 # <<<<

@@ -160,7 +160,7 @@ class TestRPA_GitlabQA():
       return 
     except TimeoutException as ex:
       print("Exception has been thrown. " + str(ex.msg))
-      send_survey(user="get", text=""":interrobang::interrobang::interrobang: *Error* on *Get Gitlab Issue Information.* :broken_heart::broken_heart::broken_heart:\nPlease get help from your Administrator.""")
+      # send_survey(user="get", text=""":interrobang::interrobang::interrobang: *Error* on *Get Gitlab Issue Information.* :broken_heart::broken_heart::broken_heart:\nPlease get help from your Administrator.""")
 
   def remove_label_needtotest(self, url):
     try:
@@ -321,16 +321,55 @@ WHERE id = {0};
         sqlite.executeQuery(query) # Save to db
     self.driver.close()
 
+  def read_blocks(self):
+    issue_summary = "*Collected {0} issue(s):*\n{1}"
+    finish_summary = "*Finish {0} issue(s):*\n{1}"
 
+    issue_summary = issue_summary.format(len(issue_obj_list), self.get_list_issue(issue_obj_list))
+    finish_summary = finish_summary.format(len(issue_list), self.get_list_issue(issue_list))
+    data = [
+        {
+            "type": "header",
+            "text": {
+                "type": "plain_text",
+                "text": ":mega: RPA Process completed success. :rocket::rocket:"
+            }
+        },
+        {
+            "type": "section",
+            "fields": [
+                {
+                    "type": "mrkdwn",
+                    "text": issue_summary
+                }
+            ]
+        },
+        {
+            "type": "section",
+            "fields": [
+                {
+                    "type": "mrkdwn",
+                    "text": finish_summary
+                }
+            ]
+        }
+    ]
+    return data
+
+  def get_list_issue(self, issue_arr):
+    txt = ""
+    for issue in issue_arr:
+        txt = txt + str.format("<{0}|{1}>, ", issue.issue_url,  issue.issue_number)
+    return txt
+  
 #  Test case 
-  # def test_create_testcase(self):
-  #   self.create_testcase()
+  def test_create_testcase(self):
+    self.create_testcase()
 
-  # def test_finish_testcase(self):
-  #   self.finish_testcase()
+  def test_finish_testcase(self):
+    self.finish_testcase()
 
   def test_notification(self):
-    # send_survey(user="AAAA", channel="#gitlab-qa", text="Hello hhskdfjhfk")
-    send_survey(user="AAAA", text=""":interrobang::interrobang::interrobang: *Error* on *Get Gitlab Issue Information.* :broken_heart::broken_heart::broken_heart:\nPlease get help from your Administrator.""")
+    send_survey(user="AAAA", block=self.read_blocks(), text="Hello hhskdfjhfk")
 
 # <<<<

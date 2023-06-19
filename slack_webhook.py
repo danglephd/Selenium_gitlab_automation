@@ -21,7 +21,7 @@ slack = WebhookClient(
     url = SLACK_HOOK
     # https://hooks.slack.com/services/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
 )
-slack.send(text="Hello, world.")
+slack.send(text="Say hello from RPA_IPTP_QA.")
 
 
 def send_survey(user, text, channel = CHANNEL_ID):

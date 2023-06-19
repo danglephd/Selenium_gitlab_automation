@@ -1,3 +1,4 @@
+import json
 import os
 from slackeventsapi import SlackEventAdapter
 from slack_sdk import WebClient
@@ -17,18 +18,16 @@ try:
 except KeyError:
     print("Environment variable does not exist", KeyError)
 
-slack = WebhookClient(
-    url = SLACK_HOOK
-    # https://hooks.slack.com/services/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
-)
-slack.send(text="Say hello from RPA_IPTP_QA.")
+# slack = WebhookClient(
+#     url = SLACK_HOOK
+# )
+# slack.send(text="Say hello from RPA_IPTP_QA.")
 
 
-def send_survey(user, text, channel = CHANNEL_ID):
-    # More info: https://api.slack.com/docs/message-menus
-    # Send an in-channel reply to the user
-    print('>>>send_survey ', user, text, channel)
+def send_survey(user, text, block=None, channel = CHANNEL_ID):
+    print('>>>send_survey ', user, text, block, channel)
     slack_client.api_call(
-        api_method="chat.postMessage", json={"channel": channel, "text": text}
+        # api_method="chat.postMessage", json={"channel": channel, "blocks": json.dumps(block), "text": block}
+        api_method="chat.postMessage", json={"channel": channel, "blocks": block or None, "text": text}
     )
     

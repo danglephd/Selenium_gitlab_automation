@@ -18,6 +18,7 @@ from sqlite import GitLab_Issue_Obj
 from openpyxl import load_workbook
 import pyautogui
 from slack_webhook import *
+import firebase_db
 
 # sign_in_url = "https://git.iptp.net/users/sign_in"
 issue_obj_list = []
@@ -231,8 +232,13 @@ class TestRPA_GitlabQA():
       send_survey(user="remove", text=str.format(""":speech_balloon: *Error* on *Remove* label *wf:QA*. :anger:\nPlease check this <{0}|issue>.""", url))
 
   def collect_finish_gitlab_issues(self):
-    criteria = "WHERE test_state LIKE 'Finish'"
-    self.issue_list = sqlite.getListIssue(criteria)
+    # SQLitedb
+    # criteria = "WHERE test_state LIKE 'Finish'"
+    # self.issue_list = sqlite.getListIssue(criteria)
+
+    # Firebasedb
+    criteria = ['test_state', 'Finish']
+    self.issue_list = firebase_db.getListIssue(criteria)
 
   def update_gitlab_test_issues(self, test_issue_url, project, test_file_path):
     # print("update_gitlab_test_issues", test_issue_url, project, test_file_path)
@@ -304,7 +310,12 @@ WHERE id = {0};
     self.gitlabsignin()
     self.collect_gitlab_issues()
     self.create_testcase_update_issue_update_db()
-    sqlite.save(issue_obj_list) # Save to db
+
+    #Save to SQLiteDB
+    # sqlite.save(issue_obj_list) # Save to db
+
+    #Save to firebaseDB
+    firebase_db.save(issue_obj_list) # Save to db
     self.driver.close()
 
   def finish_testcase(self):
@@ -318,7 +329,12 @@ WHERE id = {0};
         self.update_gitlab_test_issues(test_issue_url=row.issue_test_url, project=row.project, test_file_path=row.path)
         # query_lst.append(self.update_gitlab_issues(issue_url_item=row.issue_url, id=row.id))
         query = self.update_gitlab_issues(issue_url_item=row.issue_url, id=row.id)
-        sqlite.executeQuery(query) # Save to db
+
+        # Update SQLiteDb
+        # sqlite.executeQuery(query) # Save to db
+
+        # Update FirebaseDb
+        firebase_db.update_testcase_status(issue_url=row.issue_url)
     self.driver.close()
 
   def read_blocks(self):
@@ -363,13 +379,25 @@ WHERE id = {0};
     return txt
   
 #  Test case 
-  def test_create_testcase(self):
-    self.create_testcase()
+  # def test_create_testcase(self):
+  #   self.create_testcase()
 
-  def test_finish_testcase(self):
-    self.finish_testcase()
+  # def test_finish_testcase(self):
+  #   self.finish_testcase()
 
-  def test_notification(self):
-    send_survey(user="AAAA", block=self.read_blocks(), text="Hello hhskdfjhfk")
+  # def test_notification(self):
+  #   send_survey(user="AAAA", block=self.read_blocks(), text="Hello hhskdfjhfk")
+    
+  def test_firebase_db(self):
+    print('>>>test_firebase_db')
+    # firebase_db.create_db() # run one times, Init RealtimeDB from SQliteDB
+    
+    # criteria = ['test_state', 'Finish']
+    # self.issue_list = firebase_db.getListIssue(criteria)
+    # for row in self.issue_list:
+    #   print('>>>>', row)
+
+    # firebase_db.update_testcase_status("https://git.iptp.net/erp/erp-web/-/issues/164")
+
 
 # <<<<

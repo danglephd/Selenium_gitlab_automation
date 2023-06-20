@@ -379,17 +379,17 @@ WHERE id = {0};
     return txt
   
 #  Test case 
-  # def test_create_testcase(self):
-  #   self.create_testcase()
+  def test_create_testcase(self):
+    self.create_testcase()
 
-  # def test_finish_testcase(self):
-  #   self.finish_testcase()
+  def test_finish_testcase(self):
+    self.finish_testcase()
 
   # def test_notification(self):
   #   send_survey(user="AAAA", block=self.read_blocks(), text="Hello hhskdfjhfk")
     
-  def test_firebase_db(self):
-    print('>>>test_firebase_db')
+  # def test_firebase_db(self):
+  #   print('>>>test_firebase_db')
     # firebase_db.create_db() # run one times, Init RealtimeDB from SQliteDB
     
     # criteria = ['test_state', 'Finish']

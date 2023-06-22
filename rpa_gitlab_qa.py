@@ -439,6 +439,10 @@ WHERE id = {0};
 """.format(item.id, issue_item.test_state)
           sqlite.executeQuery(query) 
 
+
+  def create_firebase_db(self):
+    firebase_db.create_db()
+
 # <<<<<<<<<<<<<<
 
 #  Test case 
@@ -454,8 +458,11 @@ WHERE id = {0};
   # def test_migrate_firebase_db(self):
   #   self.migrate_firebase_db()
 
-  # def test_migrate_SQLiteDb(self):
-  #   self.migrate_SQLiteDb()
+  def test_migrate_SQLiteDb(self):
+    self.migrate_SQLiteDb()
+
+  # def test_create_firebase_db(self):
+  #   self.create_firebase_db()
 
 
 # <<<<

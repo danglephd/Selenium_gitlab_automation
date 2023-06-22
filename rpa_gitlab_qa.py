@@ -19,11 +19,18 @@ from openpyxl import load_workbook
 import pyautogui
 from slack_webhook import *
 import firebase_db
+from enum import Enum
 
 # sign_in_url = "https://git.iptp.net/users/sign_in"
 issue_obj_list = []
 issue_link_list = []
 issue_list = []
+ 
+class DBMSType(Enum):
+    SQLITE = 1
+    REALTIME = 2
+
+db_selection = DBMSType.SQLITE
 
 try:
   load_dotenv()
@@ -232,13 +239,15 @@ class TestRPA_GitlabQA():
       send_survey(user="remove", text=str.format(""":speech_balloon: *Error* on *Remove* label *wf:QA*. :anger:\nPlease check this <{0}|issue>.""", url))
 
   def collect_finish_gitlab_issues(self):
-    # SQLitedb
-    # criteria = "WHERE test_state LIKE 'Finish'"
-    # self.issue_list = sqlite.getListIssue(criteria)
-
-    # Firebasedb
-    criteria = ['test_state', 'Finish']
-    self.issue_list = firebase_db.getListIssue(criteria)
+    match db_selection:
+      case DBMSType.SQLITE:
+        # SQLitedb
+        criteria = "WHERE test_state LIKE 'Finish'"
+        self.issue_list = sqlite.getListIssue(criteria)
+      case DBMSType.REALTIME:
+        # Firebasedb
+        criteria = ['test_state', 'Finish']
+        self.issue_list = firebase_db.getListIssue(criteria)
 
   def update_gitlab_test_issues(self, test_issue_url, project, test_file_path):
     # print("update_gitlab_test_issues", test_issue_url, project, test_file_path)
@@ -310,12 +319,14 @@ WHERE id = {0};
     self.gitlabsignin()
     self.collect_gitlab_issues()
     self.create_testcase_update_issue_update_db()
-
-    #Save to SQLiteDB
-    # sqlite.save(issue_obj_list) # Save to db
-
-    #Save to firebaseDB
-    firebase_db.save(issue_obj_list) # Save to db
+    
+    match db_selection:
+      case DBMSType.SQLITE:
+        #Save to SQLiteDB
+        sqlite.save(issue_obj_list) # Save to db
+      case DBMSType.REALTIME:
+        #Save to firebaseDB
+        firebase_db.save(issue_obj_list) # Save to db
     self.driver.close()
 
   def finish_testcase(self):
@@ -330,11 +341,13 @@ WHERE id = {0};
         # query_lst.append(self.update_gitlab_issues(issue_url_item=row.issue_url, id=row.id))
         query = self.update_gitlab_issues(issue_url_item=row.issue_url, id=row.id)
 
-        # Update SQLiteDb
-        # sqlite.executeQuery(query) # Save to db
-
-        # Update FirebaseDb
-        firebase_db.update_testcase_status(issue_url=row.issue_url)
+        match db_selection:
+          case DBMSType.SQLITE:
+            # Update SQLiteDb
+            sqlite.executeQuery(query) # Save to db
+          case DBMSType.REALTIME:
+            # Update FirebaseDb
+            firebase_db.update_testcase_status(issue_url=row.issue_url)
     self.driver.close()
 
   def read_blocks(self):
@@ -385,8 +398,20 @@ WHERE id = {0};
   def test_finish_testcase(self):
     self.finish_testcase()
 
-  # def test_notification(self):
-  #   send_survey(user="AAAA", block=self.read_blocks(), text="Hello hhskdfjhfk")
+  def test_notification(self):
+    send_survey(user="AAAA", block=self.read_blocks(), text="Hello hhskdfjhfk")
+    
+  # def upload_realtime_db(self):
+  #   print('>>>generate_realtime_db')
+
+  # def test_download_sqlite(self):
+  #   print('>>>download_sqlite')
+  #   self.issue_list = firebase_db.getAllIssue()
+  #   print('>>>len', len(self.issue_list))
+  #   # for issue_item in self.issue_list:
+      
+
+
     
   # def test_firebase_db(self):
   #   print('>>>test_firebase_db')

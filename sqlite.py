@@ -29,16 +29,16 @@ def createTable():
 
 def save(gitLab_issue_obj):
     conn = sqlite3.connect('gitlab_issue.db')
-    print("Opened database successfully")
+    # print("Opened database successfully")
 
     for item in gitLab_issue_obj:
-        print(">>item", item.project, item.path, item.test_state, item.issue_test_url, item.issue_test_number, item.issue_number, item.issue_url)
+        # print(">>item", item.project, item.path, item.test_state, item.issue_test_url, item.issue_test_number, item.issue_number, item.issue_url)
         conn.execute("""INSERT INTO ISSUE (project, path, test_state, issue_test_url, issue_test_number, issue_number, issue_url) 
                      VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}')"""
                      .format(item.project, item.path, item.test_state, item.issue_test_url, item.issue_test_number, item.issue_number, item.issue_url))
 
     conn.commit()
-    print("Records insert successfully")
+    # print("Records insert successfully")
 
     conn.close()
     
@@ -65,13 +65,14 @@ def initTable(lst_issue):
 def executeQuery(query):
     try:
         conn = sqlite3.connect('gitlab_issue.db')
-        print("Opened database successfully")
+        # print("Opened database successfully")
+        # print(">>>sql_query: " + query)
         
         # for query in query_lst:
         conn.execute(query)
         conn.commit()
         
-        print("Operation done successfully")
+        # print("Operation done successfully")
         conn.close()
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
@@ -79,10 +80,11 @@ def executeQuery(query):
 def getListIssue(criteria):
     try:
         conn = sqlite3.connect('gitlab_issue.db')
-        print("Opened database successfully")
-
-        cursor = conn.execute("""SELECT id, project, path, test_state, issue_test_url, issue_test_number, issue_number, issue_url 
-                              from ISSUE """ + criteria)
+        # print("Opened database successfully")
+        sql_query = """SELECT id, project, path, test_state, issue_test_url, issue_test_number, issue_number, issue_url 
+                              from ISSUE """ + criteria
+        # print(">>>sql_query: " + sql_query)
+        cursor = conn.execute(sql_query)
         data = []
         for row in cursor:
             print("project = ", row[1])
@@ -94,7 +96,7 @@ def getListIssue(criteria):
             print("issue_url = ", row[7], "\n")
             data.append(GitLab_Issue_Obj(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
 
-        print("Operation done successfully")
+        # print("Operation done successfully")
         conn.close()
         return data
     except Exception as err:

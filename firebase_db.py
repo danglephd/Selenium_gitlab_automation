@@ -89,4 +89,20 @@ def getListIssue(criteria):
         return data
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
+
+def getAllIssue():
+    print('>>>getAllIssue')
+    try:
+        ref = db.reference('issues')
+        data = []
+        snapshot = ref.get()
+        
+        for key, val in snapshot.items():
+            # print('{0} => {1}'.format(key, val))
+            data.append(GitLab_Issue_Obj(
+                id=0, project=val['project'], path=val['path'], test_state=val['test_state'], 
+                issue_test_url=val['issue_test_url'], issue_test_number=val['issue_test_number'], issue_number=val['issue_number'], issue_url=val['issue_url']))
+        return data
+    except Exception as err:
+        print(f"Unexpected {err=}, {type(err)=}")
     

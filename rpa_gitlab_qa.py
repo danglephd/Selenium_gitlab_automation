@@ -392,24 +392,38 @@ WHERE id = {0};
     return txt
   
 #  Test case 
-  def test_create_testcase(self):
-    self.create_testcase()
+  # def test_create_testcase(self):
+  #   self.create_testcase()
 
-  def test_finish_testcase(self):
-    self.finish_testcase()
+  # def test_finish_testcase(self):
+  #   self.finish_testcase()
 
-  def test_notification(self):
-    send_survey(user="AAAA", block=self.read_blocks(), text="Hello hhskdfjhfk")
+  # def test_notification(self):
+  #   send_survey(user="AAAA", block=self.read_blocks(), text="Hello hhskdfjhfk")
     
-  # def upload_realtime_db(self):
-  #   print('>>>generate_realtime_db')
+  def test_upload_migrate_firebase_db(self):
+    print('>>>upload_migrate_firebase_db')
 
-  # def test_download_sqlite(self):
-  #   print('>>>download_sqlite')
-  #   self.issue_list = firebase_db.getAllIssue()
-  #   print('>>>len', len(self.issue_list))
-  #   # for issue_item in self.issue_list:
-      
+  def migrate_SQLiteDb(self):
+    print('>>>migrate_SQLiteDb')
+    self.issue_list = firebase_db.getAllIssue()
+    print('>>>len', len(self.issue_list))
+
+    for issue_item in self.issue_list:
+      criteria = "WHERE issue_url = '{0}' and issue_test_url = '{1}'"
+      data = sqlite.getListIssue(str.format(criteria, issue_item.issue_url, issue_item.issue_test_url))
+      if len(data) <= 0:
+        sqlite.save([issue_item])
+      else:
+        print('>>>Exist item, ', len(data))
+        for item in data:
+          query = """UPDATE ISSUE
+SET test_state = '{1}'
+WHERE id = {0};
+""".format(item.id, issue_item.test_state)
+          sqlite.executeQuery(query)
+
+
 
 
     

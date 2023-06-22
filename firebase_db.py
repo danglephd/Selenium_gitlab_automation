@@ -57,8 +57,13 @@ def save(gitLab_issue_obj):
             'issue_number': item.issue_number
         })
 
-def executeQuery():
-    print('>>>executeQuery')
+def update(gitLab_issue_obj):
+    print('>>>update')
+    ref = db.reference('issues')
+    box_ref = ref.child(gitLab_issue_obj.id)
+    box_ref.update({
+        'test_state': gitLab_issue_obj.test_state
+    })
 
 def update_testcase_status(issue_url):
     print('>>>update_testcase_status')
@@ -84,7 +89,7 @@ def getListIssue(criteria):
         for key, val in snapshot.items():
             print('{0} => {1}'.format(key, val))
             data.append(GitLab_Issue_Obj(
-                id=0, project=val['project'], path=val['path'], test_state=val['test_state'], 
+                id=key, project=val['project'], path=val['path'], test_state=val['test_state'], 
                 issue_test_url=val['issue_test_url'], issue_test_number=val['issue_test_number'], issue_number=val['issue_number'], issue_url=val['issue_url']))
         return data
     except Exception as err:

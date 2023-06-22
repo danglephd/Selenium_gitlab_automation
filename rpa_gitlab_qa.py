@@ -392,7 +392,7 @@ WHERE id = {0};
     return txt
 
 
-# db prepare
+# db migrate db
   def migrate_firebase_db(self):
     print('>>>migrate_firebase_db')
     criteria = ""

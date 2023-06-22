@@ -390,18 +390,10 @@ WHERE id = {0};
     for issue in issue_arr:
         txt = txt + str.format("<{0}|{1}>, ", issue.issue_url,  issue.issue_number)
     return txt
-  
-#  Test case 
-  # def test_create_testcase(self):
-  #   self.create_testcase()
 
-  # def test_finish_testcase(self):
-  #   self.finish_testcase()
 
-  # def test_notification(self):
-  #   send_survey(user="AAAA", block=self.read_blocks(), text="Hello hhskdfjhfk")
-    
-  def test_migrate_firebase_db(self):
+# db prepare
+  def migrate_firebase_db(self):
     print('>>>migrate_firebase_db')
     criteria = ""
     self.issue_list = sqlite.getListIssue(criteria)
@@ -447,20 +439,23 @@ WHERE id = {0};
 """.format(item.id, issue_item.test_state)
           sqlite.executeQuery(query) 
 
+# <<<<<<<<<<<<<<
 
+#  Test case 
+  def test_create_testcase(self):
+    self.create_testcase()
 
+  def test_finish_testcase(self):
+    self.finish_testcase()
 
+  def test_notification(self):
+    send_survey(user="AAAA", block=self.read_blocks(), text="Hello hhskdfjhfk")
     
-  # def test_firebase_db(self):
-  #   print('>>>test_firebase_db')
-    # firebase_db.create_db() # run one times, Init RealtimeDB from SQliteDB
-    
-    # criteria = ['test_state', 'Finish']
-    # self.issue_list = firebase_db.getListIssue(criteria)
-    # for row in self.issue_list:
-    #   print('>>>>', row)
+  # def test_migrate_firebase_db(self):
+  #   self.migrate_firebase_db()
 
-    # firebase_db.update_testcase_status("https://git.iptp.net/erp/erp-web/-/issues/164")
+  # def test_migrate_SQLiteDb(self):
+  #   self.migrate_SQLiteDb()
 
 
 # <<<<

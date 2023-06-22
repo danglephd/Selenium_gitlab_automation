@@ -401,8 +401,32 @@ WHERE id = {0};
   # def test_notification(self):
   #   send_survey(user="AAAA", block=self.read_blocks(), text="Hello hhskdfjhfk")
     
-  def test_upload_migrate_firebase_db(self):
-    print('>>>upload_migrate_firebase_db')
+  def test_migrate_firebase_db(self):
+    print('>>>migrate_firebase_db')
+    criteria = ""
+    self.issue_list = sqlite.getListIssue(criteria)
+    print('>>>len', len(self.issue_list))
+    save_item = []
+    for issue_item in self.issue_list:
+      criteria = ['issue_url', issue_item.issue_url]
+      data = firebase_db.getListIssue(criteria)
+      if len(data) <= 0:
+        save_item.append(issue_item)
+      else:
+        print('>>>Exist item, ', len(data))
+        item_to_update = None
+        for item in data:
+          if item.issue_test_url == issue_item.issue_test_url:
+            item_to_update = item
+            break
+        if item_to_update is None:
+          save_item.append(issue_item)
+        else:
+          firebase_db.update(item_to_update)
+
+    if len(save_item) > 0:
+      print('>>>Save len: ',  len(save_item) )
+      firebase_db.save(save_item) 
 
   def migrate_SQLiteDb(self):
     print('>>>migrate_SQLiteDb')
@@ -413,7 +437,7 @@ WHERE id = {0};
       criteria = "WHERE issue_url = '{0}' and issue_test_url = '{1}'"
       data = sqlite.getListIssue(str.format(criteria, issue_item.issue_url, issue_item.issue_test_url))
       if len(data) <= 0:
-        sqlite.save([issue_item])
+        sqlite.save([issue_item]) 
       else:
         print('>>>Exist item, ', len(data))
         for item in data:
@@ -421,7 +445,7 @@ WHERE id = {0};
 SET test_state = '{1}'
 WHERE id = {0};
 """.format(item.id, issue_item.test_state)
-          sqlite.executeQuery(query)
+          sqlite.executeQuery(query) 
 
 
 

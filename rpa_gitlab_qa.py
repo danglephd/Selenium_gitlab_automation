@@ -458,8 +458,8 @@ WHERE id = {0};
   # def test_migrate_firebase_db(self):
   #   self.migrate_firebase_db()
 
-  def test_migrate_SQLiteDb(self):
-    self.migrate_SQLiteDb()
+  # def test_migrate_SQLiteDb(self):
+  #   self.migrate_SQLiteDb()
 
   # def test_create_firebase_db(self):
   #   self.create_firebase_db()

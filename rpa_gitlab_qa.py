@@ -350,7 +350,7 @@ WHERE id = {0};
             firebase_db.update_testcase_status(issue_url=row.issue_url)
     self.driver.close()
 
-  def read_blocks(self):
+  def read_blocks(self, is_finishing=False, is_creating=False):
     issue_summary = "*Collected {0} issue(s):*\n{1}"
     finish_summary = "*Finish {0} issue(s):*\n{1}"
 
@@ -363,16 +363,11 @@ WHERE id = {0};
                 "type": "plain_text",
                 "text": ":mega: RPA Process completed success. :rocket::rocket:"
             }
-        },
-        {
-            "type": "section",
-            "fields": [
-                {
-                    "type": "mrkdwn",
-                    "text": issue_summary
-                }
-            ]
-        },
+        }
+    ]
+
+    if is_finishing:
+      data.append(
         {
             "type": "section",
             "fields": [
@@ -382,7 +377,20 @@ WHERE id = {0};
                 }
             ]
         }
-    ]
+      )
+      
+    if is_creating:
+      data.append(
+        {
+            "type": "section",
+            "fields": [
+                {
+                    "type": "mrkdwn",
+                    "text": issue_summary
+                }
+            ]
+        }
+      )
     return data
 
   def get_list_issue(self, issue_arr):
@@ -448,12 +456,14 @@ WHERE id = {0};
 #  Test case 
   def test_create_testcase(self):
     self.create_testcase()
+    send_survey(user="AAAA", block=self.read_blocks(is_finishing=False, is_creating=True), text="Hello hhskdfjhfk")
 
   def test_finish_testcase(self):
     self.finish_testcase()
+    send_survey(user="AAAA", block=self.read_blocks(is_finishing=True, is_creating=False), text="Hello hhskdfjhfk")
 
-  def test_notification(self):
-    send_survey(user="AAAA", block=self.read_blocks(), text="Hello hhskdfjhfk")
+  # def test_notification(self):
+  #   send_survey(user="AAAA", block=self.read_blocks(), text="Hello hhskdfjhfk")
     
   # def test_migrate_firebase_db(self):
   #   self.migrate_firebase_db()

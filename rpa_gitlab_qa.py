@@ -355,7 +355,7 @@ WHERE id = {0};
     finish_summary = "*Finish {0} issue(s):*\n{1}"
 
     issue_summary = issue_summary.format(len(issue_obj_list), self.get_list_issue(issue_obj_list))
-    finish_summary = finish_summary.format(len(issue_list), self.get_list_issue(issue_list))
+    finish_summary = finish_summary.format(len(self.issue_list), self.get_list_issue(self.issue_list))
     data = [
         {
             "type": "header",

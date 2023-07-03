@@ -459,22 +459,23 @@ WHERE id = {0};
 # <<<<<<<<<<<<<<
 
 #  Test case 
-  # def test_create_testcase(self):
-  #   self.create_testcase()
-  #   send_survey(user="AAAA", block=self.read_blocks(is_finishing=False, is_creating=True), text="Hello hhskdfjhfk")
+  
+  def test_migrate_SQLiteDb(self):
+    self.migrate_SQLiteDb()
+
+  def test_create_testcase(self):
+    self.create_testcase()
+    send_survey(user="AAAA", block=self.read_blocks(is_finishing=False, is_creating=True), text="Selenium result")
 
   def test_finish_testcase(self):
     self.finish_testcase()
-    send_survey(user="AAAA", block=self.read_blocks(is_finishing=True, is_creating=False), text="Hello hhskdfjhfk")
+    send_survey(user="AAAA", block=self.read_blocks(is_finishing=True, is_creating=False), text="Selenium result")
 
   # def test_notification(self):
   #   send_survey(user="AAAA", block=self.read_blocks(), text="Hello hhskdfjhfk")
     
-  # def test_migrate_firebase_db(self):
-  #   self.migrate_firebase_db()
-
-  # def test_migrate_SQLiteDb(self):
-  #   self.migrate_SQLiteDb()
+  def test_migrate_firebase_db(self):
+    self.migrate_firebase_db()
 
   # def test_create_firebase_db(self):
   #   self.create_firebase_db()

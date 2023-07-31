@@ -317,7 +317,7 @@ WHERE id = {0};
   def gitlabsignin(self):
     print("gitlabsignin")
     self.driver.get(SIGN_IN_URL)
-    self.driver.set_window_size(1047, 652)
+    self.driver.maximize_window()
     self.driver.find_element(By.ID, "user_login").send_keys(GITLAB_USERNAME)
     self.driver.find_element(By.ID, "user_password").send_keys(GITLAB_PASSWORD)
     submit_ele = self.driver.find_element(By.XPATH, "//button[@type='submit']")

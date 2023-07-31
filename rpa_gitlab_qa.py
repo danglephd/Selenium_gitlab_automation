@@ -47,22 +47,26 @@ try:
   XM_API_FIND_ISSUE_URL = os.environ["XM_API_FIND_ISSUE_URL"]
   ERP_WEB_FIND_ISSUE_URL = os.environ["ERP_WEB_FIND_ISSUE_URL"]
   ERP_SERVER_FIND_ISSUE_URL = os.environ["ERP_SERVER_FIND_ISSUE_URL"]
+  ADMIN_PAGE_FIND_ISSUE_URL = os.environ["ADMIN_PAGE_FIND_ISSUE_URL"]
   
   XM_WEB_NEW_ISSUE_URL = os.environ["XM_WEB_NEW_ISSUE_URL"]
   XM_API_NEW_ISSUE_URL = os.environ["XM_API_NEW_ISSUE_URL"]
   ERP_WEB_NEW_ISSUE_URL = os.environ["ERP_WEB_NEW_ISSUE_URL"]
   ERP_SERVER_NEW_ISSUE_URL = os.environ["ERP_SERVER_NEW_ISSUE_URL"]
+  ADMIN_PAGE_NEW_ISSUE_URL = os.environ["ADMIN_PAGE_NEW_ISSUE_URL"]
 
   XM_WEB_PROJECT = os.environ["XM_WEB_PROJECT"]
   XM_API_PROJECT = os.environ["XM_API_PROJECT"]
   ERP_WEB_PROJECT = os.environ["ERP_WEB_PROJECT"]
   ERP_SERVER_PROJECT = os.environ["ERP_SERVER_PROJECT"]
+  ADMIN_PAGE_PROJECT = os.environ["ADMIN_PAGE_PROJECT"]
 
   project_links = [
     [XM_WEB_FIND_ISSUE_URL, XM_WEB_PROJECT, XM_WEB_NEW_ISSUE_URL],
     [XM_API_FIND_ISSUE_URL, XM_API_PROJECT, XM_API_NEW_ISSUE_URL],
     [ERP_WEB_FIND_ISSUE_URL, ERP_WEB_PROJECT, ERP_WEB_NEW_ISSUE_URL],
-    [ERP_SERVER_FIND_ISSUE_URL, ERP_SERVER_PROJECT, ERP_SERVER_NEW_ISSUE_URL]
+    [ERP_SERVER_FIND_ISSUE_URL, ERP_SERVER_PROJECT, ERP_SERVER_NEW_ISSUE_URL],
+    [ADMIN_PAGE_FIND_ISSUE_URL, ADMIN_PAGE_PROJECT, ADMIN_PAGE_NEW_ISSUE_URL]
   ]
 
   # print("Environment variable>>> ", TEST_ISSUE_TEMP, TEST_ISSUE_DESC_TEMP)
@@ -448,7 +452,7 @@ WHERE id = {0};
         for item in data:
           query = """UPDATE ISSUE
 SET test_state = '{1}'
-WHERE id = {0};
+WHERE id = {0} and test_state = 'Create';
 """.format(item.id, issue_item.test_state)
           sqlite.executeQuery(query) 
 
@@ -460,8 +464,8 @@ WHERE id = {0};
 
 #  Test case 
   
-  def test_migrate_SQLiteDb(self):
-    self.migrate_SQLiteDb()
+  # def test_migrate_SQLiteDb(self):
+  #   self.migrate_SQLiteDb()
 
   def test_create_testcase(self):
     self.create_testcase()

@@ -3,6 +3,7 @@ import pytest
 import time
 import json
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions
@@ -82,7 +83,10 @@ except KeyError:
 class TestRPA_GitlabQA():
   def setup_method(self, method):
     delay = 5 # seconds
-    self.driver = webdriver.Chrome()
+    # self.driver = webdriver.Chrome()
+    service = Service()
+    options = webdriver.ChromeOptions()
+    self.driver = webdriver.Chrome(service=service, options=options)
     self.wait = WebDriverWait(self.driver, delay)
     self.vars = {}
     print("1")

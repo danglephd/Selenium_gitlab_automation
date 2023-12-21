@@ -249,8 +249,12 @@ class TestRPA_GitlabQA():
     for proj_url in project_links:
       print(proj_url[0])
       print(proj_url[1])
-      self.driver.get(proj_url[0])
-      self.get_gitlab_issue_info(proj_url[1], proj_url[2])
+      try:
+        self.driver.get(proj_url[0])
+        self.get_gitlab_issue_info(proj_url[1], proj_url[2])
+      except Exception as ex:
+        print("Collect Gitlab Issues, Exception: " + str(ex.msg))
+        send_survey(user="collect", text=str.format(""":speech_balloon: *Error* on *Collect* Gitlab Issues. :anger:\nPlease check this <{0}|issue>.""", proj_url[0]))
 
 # Finish processes
 

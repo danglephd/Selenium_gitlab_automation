@@ -16,10 +16,18 @@ An project use Selenium to auto generate gitlab test case
  - Query issue data from FirebaseDB
  - For each item compare to SQLite DB, find the differents to update or add new
 2. Create new testcase for Gitlab Issues with label Need to test.
+ - Signin to Gitlab IPTP
+ - For each init project:
+    - Open Project search page with label Need to test to Collect 
+    - Collect: issue title, issue url, issue number.
+    - For each collected issue:
+      - Create test issue and test case file
+      - Update main issue with: link to created test issue, add label Test case, remove label Need to test
+      - Update to SQLiteDB: create new issue with status Create
 2. Update to SQLiteDB, the Gitlab Issues with status is Finish.
  - Collect the Gitlab Issues with status is Finish.
  - Signin to Gitlab IPTP
- - For each item:
+ - For each Gitlab Issue item:
    - Open Gitlab Issue Test's link
    - Add description, add attachment
    - Open Gitlab Issue 's link

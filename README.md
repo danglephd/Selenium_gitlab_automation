@@ -16,7 +16,16 @@ An project use Selenium to auto generate gitlab test case
  - Query issue data from FirebaseDB
  - For each item compare to SQLite DB, find the differents to update or add new
 2. Create new testcase for Gitlab Issues with label Need to test.
-2. Update finished Gitlab Issues.
+2. Update to SQLiteDB, the Gitlab Issues with status is Finish.
+ - Collect the Gitlab Issues with status is Finish.
+ - Signin to Gitlab IPTP
+ - For each item:
+   - Open Gitlab Issue Test's link
+   - Add description, add attachment
+   - Open Gitlab Issue 's link
+   - Add labels: Test Pass, wf:Ready_for_UAT
+   - Remove label: wf:QA
+   - Update SQLite DB: the Gitlab Issues with status is Finish will be update to Done
 3. Migrate DB from SQLite DB to FirebaseDB, update locale database.
 
 # How to run it

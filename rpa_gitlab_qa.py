@@ -3,6 +3,7 @@ import pytest
 import time
 import json
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions
@@ -24,7 +25,7 @@ from enum import Enum
 # sign_in_url = "https://git.iptp.net/users/sign_in"
 issue_obj_list = []
 issue_link_list = []
-issue_list = []
+issue_finished_list = []
  
 class DBMSType(Enum):
     SQLITE = 1
@@ -44,25 +45,45 @@ try:
   SIGN_IN_URL = os.environ["SIGN_IN_URL"]
   
   XM_WEB_FIND_ISSUE_URL = os.environ["XM_WEB_FIND_ISSUE_URL"]
+  XM_WEB_V2_FIND_ISSUE_URL = os.environ["XM_WEB_V2_FIND_ISSUE_URL"]
   XM_API_FIND_ISSUE_URL = os.environ["XM_API_FIND_ISSUE_URL"]
+  XM_API_V2_FIND_ISSUE_URL = os.environ["XM_API_V2_FIND_ISSUE_URL"]
+  XM_LA_FIND_ISSUE_URL = os.environ["XM_LA_FIND_ISSUE_URL"]
   ERP_WEB_FIND_ISSUE_URL = os.environ["ERP_WEB_FIND_ISSUE_URL"]
   ERP_SERVER_FIND_ISSUE_URL = os.environ["ERP_SERVER_FIND_ISSUE_URL"]
+  ADMIN_PAGE_FIND_ISSUE_URL = os.environ["ADMIN_PAGE_FIND_ISSUE_URL"]
+  ERP_XML_TO_SQL_FIND_ISSUE_URL = os.environ["ERP_XML_TO_SQL_FIND_ISSUE_URL"]
   
   XM_WEB_NEW_ISSUE_URL = os.environ["XM_WEB_NEW_ISSUE_URL"]
+  XM_WEB_V2_NEW_ISSUE_URL = os.environ["XM_WEB_V2_NEW_ISSUE_URL"]
   XM_API_NEW_ISSUE_URL = os.environ["XM_API_NEW_ISSUE_URL"]
+  XM_API_V2_NEW_ISSUE_URL = os.environ["XM_API_V2_NEW_ISSUE_URL"]
+  XM_LA_NEW_ISSUE_URL = os.environ["XM_LA_NEW_ISSUE_URL"]
   ERP_WEB_NEW_ISSUE_URL = os.environ["ERP_WEB_NEW_ISSUE_URL"]
   ERP_SERVER_NEW_ISSUE_URL = os.environ["ERP_SERVER_NEW_ISSUE_URL"]
+  ADMIN_PAGE_NEW_ISSUE_URL = os.environ["ADMIN_PAGE_NEW_ISSUE_URL"]
+  ERP_XML_TO_SQL_NEW_ISSUE_URL = os.environ["ERP_XML_TO_SQL_NEW_ISSUE_URL"]
 
   XM_WEB_PROJECT = os.environ["XM_WEB_PROJECT"]
+  XM_WEB_V2_PROJECT = os.environ["XM_WEB_V2_PROJECT"]
   XM_API_PROJECT = os.environ["XM_API_PROJECT"]
+  XM_API_V2_PROJECT = os.environ["XM_API_V2_PROJECT"]
+  XM_LA_PROJECT = os.environ["XM_LA_PROJECT"]
   ERP_WEB_PROJECT = os.environ["ERP_WEB_PROJECT"]
   ERP_SERVER_PROJECT = os.environ["ERP_SERVER_PROJECT"]
+  ADMIN_PAGE_PROJECT = os.environ["ADMIN_PAGE_PROJECT"]
+  ERP_XML_TO_SQL_PROJECT = os.environ["ERP_XML_TO_SQL_PROJECT"]
 
   project_links = [
     [XM_WEB_FIND_ISSUE_URL, XM_WEB_PROJECT, XM_WEB_NEW_ISSUE_URL],
+    [XM_WEB_V2_FIND_ISSUE_URL, XM_WEB_V2_PROJECT, XM_WEB_V2_NEW_ISSUE_URL],
     [XM_API_FIND_ISSUE_URL, XM_API_PROJECT, XM_API_NEW_ISSUE_URL],
+    [XM_API_V2_FIND_ISSUE_URL, XM_API_V2_PROJECT, XM_API_V2_NEW_ISSUE_URL],
+    [XM_LA_FIND_ISSUE_URL, XM_LA_PROJECT, XM_LA_NEW_ISSUE_URL],
     [ERP_WEB_FIND_ISSUE_URL, ERP_WEB_PROJECT, ERP_WEB_NEW_ISSUE_URL],
-    [ERP_SERVER_FIND_ISSUE_URL, ERP_SERVER_PROJECT, ERP_SERVER_NEW_ISSUE_URL]
+    [ERP_SERVER_FIND_ISSUE_URL, ERP_SERVER_PROJECT, ERP_SERVER_NEW_ISSUE_URL],
+    [ERP_XML_TO_SQL_FIND_ISSUE_URL, ERP_XML_TO_SQL_PROJECT, ERP_XML_TO_SQL_NEW_ISSUE_URL],
+    [ADMIN_PAGE_FIND_ISSUE_URL, ADMIN_PAGE_PROJECT, ADMIN_PAGE_NEW_ISSUE_URL]
   ]
 
   # print("Environment variable>>> ", TEST_ISSUE_TEMP, TEST_ISSUE_DESC_TEMP)
@@ -74,7 +95,10 @@ except KeyError:
 class TestRPA_GitlabQA():
   def setup_method(self, method):
     delay = 5 # seconds
-    self.driver = webdriver.Chrome()
+    # self.driver = webdriver.Chrome()
+    service = Service()
+    options = webdriver.ChromeOptions()
+    self.driver = webdriver.Chrome(service=service, options=options)
     self.wait = WebDriverWait(self.driver, delay)
     self.vars = {}
     print("1")
@@ -225,8 +249,12 @@ class TestRPA_GitlabQA():
     for proj_url in project_links:
       print(proj_url[0])
       print(proj_url[1])
-      self.driver.get(proj_url[0])
-      self.get_gitlab_issue_info(proj_url[1], proj_url[2])
+      try:
+        self.driver.get(proj_url[0])
+        self.get_gitlab_issue_info(proj_url[1], proj_url[2])
+      except Exception as ex:
+        print("Collect Gitlab Issues, Exception: " + str(ex.msg))
+        send_survey(user="collect", text=str.format(""":speech_balloon: *Error* on *Collect* Gitlab Issues. :anger:\nPlease check this <{0}|issue>.""", proj_url[0]))
 
 # Finish processes
 
@@ -239,15 +267,20 @@ class TestRPA_GitlabQA():
       send_survey(user="remove", text=str.format(""":speech_balloon: *Error* on *Remove* label *wf:QA*. :anger:\nPlease check this <{0}|issue>.""", url))
 
   def collect_finish_gitlab_issues(self):
+    
     match db_selection:
       case DBMSType.SQLITE:
         # SQLitedb
         criteria = "WHERE test_state LIKE 'Finish'"
-        self.issue_list = sqlite.getListIssue(criteria)
+        issue_list = sqlite.getListIssue(criteria)
       case DBMSType.REALTIME:
         # Firebasedb
         criteria = ['test_state', 'Finish']
-        self.issue_list = firebase_db.getListIssue(criteria)
+        issue_list = firebase_db.getListIssue(criteria)
+
+    if len(issue_list) > 0:
+      for item in issue_list:
+        issue_finished_list.append(item)
 
   def update_gitlab_test_issues(self, test_issue_url, project, test_file_path):
     # print("update_gitlab_test_issues", test_issue_url, project, test_file_path)
@@ -308,7 +341,7 @@ WHERE id = {0};
   def gitlabsignin(self):
     print("gitlabsignin")
     self.driver.get(SIGN_IN_URL)
-    self.driver.set_window_size(1047, 652)
+    self.driver.maximize_window()
     self.driver.find_element(By.ID, "user_login").send_keys(GITLAB_USERNAME)
     self.driver.find_element(By.ID, "user_password").send_keys(GITLAB_PASSWORD)
     submit_ele = self.driver.find_element(By.XPATH, "//button[@type='submit']")
@@ -333,9 +366,9 @@ WHERE id = {0};
     print("RPA finish_testcase")
     self.collect_finish_gitlab_issues()
     # query_lst = []
-    if(len(self.issue_list) > 0):
+    if(len(issue_finished_list) > 0):
       self.gitlabsignin()
-      for row in self.issue_list:
+      for row in issue_finished_list:
         # id, project, path, test_state, issue_test_url, issue_test_number, issue_number, issue_url
         self.update_gitlab_test_issues(test_issue_url=row.issue_test_url, project=row.project, test_file_path=row.path)
         # query_lst.append(self.update_gitlab_issues(issue_url_item=row.issue_url, id=row.id))
@@ -355,7 +388,7 @@ WHERE id = {0};
     finish_summary = "*Finish {0} issue(s):*\n{1}"
 
     issue_summary = issue_summary.format(len(issue_obj_list), self.get_list_issue(issue_obj_list))
-    finish_summary = finish_summary.format(len(issue_list), self.get_list_issue(issue_list))
+    finish_summary = finish_summary.format(len(issue_finished_list), self.get_list_issue(issue_finished_list))
     data = [
         {
             "type": "header",
@@ -404,10 +437,10 @@ WHERE id = {0};
   def migrate_firebase_db(self):
     print('>>>migrate_firebase_db')
     criteria = ""
-    self.issue_list = sqlite.getListIssue(criteria)
-    print('>>>len', len(self.issue_list))
+    issue_list = sqlite.getListIssue(criteria)
+    print('>>>len', len(issue_list))
     save_item = []
-    for issue_item in self.issue_list:
+    for issue_item in issue_list:
       criteria = ['issue_url', issue_item.issue_url]
       data = firebase_db.getListIssue(criteria)
       if len(data) <= 0:
@@ -430,10 +463,10 @@ WHERE id = {0};
 
   def migrate_SQLiteDb(self):
     print('>>>migrate_SQLiteDb')
-    self.issue_list = firebase_db.getAllIssue()
-    print('>>>len', len(self.issue_list))
+    issue_list = firebase_db.getAllIssue()
+    print('>>>len', len(issue_list))
 
-    for issue_item in self.issue_list:
+    for issue_item in issue_list:
       criteria = "WHERE issue_url = '{0}' and issue_test_url = '{1}'"
       data = sqlite.getListIssue(str.format(criteria, issue_item.issue_url, issue_item.issue_test_url))
       if len(data) <= 0:
@@ -443,7 +476,7 @@ WHERE id = {0};
         for item in data:
           query = """UPDATE ISSUE
 SET test_state = '{1}'
-WHERE id = {0};
+WHERE id = {0} and test_state = 'Create';
 """.format(item.id, issue_item.test_state)
           sqlite.executeQuery(query) 
 
@@ -454,22 +487,23 @@ WHERE id = {0};
 # <<<<<<<<<<<<<<
 
 #  Test case 
+  
+  def test_migrate_SQLiteDb(self):
+    self.migrate_SQLiteDb()
+
   def test_create_testcase(self):
     self.create_testcase()
-    send_survey(user="AAAA", block=self.read_blocks(is_finishing=False, is_creating=True), text="Hello hhskdfjhfk")
+    send_survey(user="AAAA", block=self.read_blocks(is_finishing=False, is_creating=True), text="Selenium result")
 
   def test_finish_testcase(self):
     self.finish_testcase()
-    send_survey(user="AAAA", block=self.read_blocks(is_finishing=True, is_creating=False), text="Hello hhskdfjhfk")
+    send_survey(user="AAAA", block=self.read_blocks(is_finishing=True, is_creating=False), text="Selenium result")
 
   # def test_notification(self):
   #   send_survey(user="AAAA", block=self.read_blocks(), text="Hello hhskdfjhfk")
     
-  # def test_migrate_firebase_db(self):
-  #   self.migrate_firebase_db()
-
-  # def test_migrate_SQLiteDb(self):
-  #   self.migrate_SQLiteDb()
+  def test_migrate_firebase_db(self):
+    self.migrate_firebase_db()
 
   # def test_create_firebase_db(self):
   #   self.create_firebase_db()

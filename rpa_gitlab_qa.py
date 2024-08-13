@@ -54,6 +54,16 @@ try:
   ADMIN_PAGE_FIND_ISSUE_URL = os.environ["ADMIN_PAGE_FIND_ISSUE_URL"]
   ERP_XML_TO_SQL_FIND_ISSUE_URL = os.environ["ERP_XML_TO_SQL_FIND_ISSUE_URL"]
   
+  XM_WEB_FIND_TEST_ISSUE_URL = os.environ["XM_WEB_FIND_TEST_ISSUE_URL"]
+  XM_WEB_V2_FIND_TEST_ISSUE_URL = os.environ["XM_WEB_V2_FIND_TEST_ISSUE_URL"]
+  XM_API_FIND_TEST_ISSUE_URL = os.environ["XM_API_FIND_TEST_ISSUE_URL"]
+  XM_API_V2_FIND_TEST_ISSUE_URL = os.environ["XM_API_V2_FIND_TEST_ISSUE_URL"]
+  XM_LA_FIND_TEST_ISSUE_URL = os.environ["XM_LA_FIND_TEST_ISSUE_URL"]
+  ERP_WEB_FIND_TEST_ISSUE_URL = os.environ["ERP_WEB_FIND_TEST_ISSUE_URL"]
+  ERP_SERVER_FIND_TEST_ISSUE_URL = os.environ["ERP_SERVER_FIND_TEST_ISSUE_URL"]
+  ADMIN_PAGE_FIND_TEST_ISSUE_URL = os.environ["ADMIN_PAGE_FIND_TEST_ISSUE_URL"]
+  ERP_XML_TO_SQL_FIND_TEST_ISSUE_URL = os.environ["ERP_XML_TO_SQL_FIND_TEST_ISSUE_URL"]
+  
   XM_WEB_NEW_ISSUE_URL = os.environ["XM_WEB_NEW_ISSUE_URL"]
   XM_WEB_V2_NEW_ISSUE_URL = os.environ["XM_WEB_V2_NEW_ISSUE_URL"]
   XM_API_NEW_ISSUE_URL = os.environ["XM_API_NEW_ISSUE_URL"]
@@ -73,17 +83,17 @@ try:
   ERP_SERVER_PROJECT = os.environ["ERP_SERVER_PROJECT"]
   ADMIN_PAGE_PROJECT = os.environ["ADMIN_PAGE_PROJECT"]
   ERP_XML_TO_SQL_PROJECT = os.environ["ERP_XML_TO_SQL_PROJECT"]
-
+  
   project_links = [
-    [XM_WEB_FIND_ISSUE_URL, XM_WEB_PROJECT, XM_WEB_NEW_ISSUE_URL],
-    [XM_WEB_V2_FIND_ISSUE_URL, XM_WEB_V2_PROJECT, XM_WEB_V2_NEW_ISSUE_URL],
-    [XM_API_FIND_ISSUE_URL, XM_API_PROJECT, XM_API_NEW_ISSUE_URL],
-    [XM_API_V2_FIND_ISSUE_URL, XM_API_V2_PROJECT, XM_API_V2_NEW_ISSUE_URL],
-    [XM_LA_FIND_ISSUE_URL, XM_LA_PROJECT, XM_LA_NEW_ISSUE_URL],
-    [ERP_WEB_FIND_ISSUE_URL, ERP_WEB_PROJECT, ERP_WEB_NEW_ISSUE_URL],
-    [ERP_SERVER_FIND_ISSUE_URL, ERP_SERVER_PROJECT, ERP_SERVER_NEW_ISSUE_URL],
-    [ERP_XML_TO_SQL_FIND_ISSUE_URL, ERP_XML_TO_SQL_PROJECT, ERP_XML_TO_SQL_NEW_ISSUE_URL],
-    [ADMIN_PAGE_FIND_ISSUE_URL, ADMIN_PAGE_PROJECT, ADMIN_PAGE_NEW_ISSUE_URL]
+    # [XM_WEB_V2_FIND_ISSUE_URL, XM_WEB_V2_PROJECT, XM_WEB_V2_NEW_ISSUE_URL],
+    # [XM_API_V2_FIND_ISSUE_URL, XM_API_V2_PROJECT, XM_API_V2_NEW_ISSUE_URL],
+    # [XM_LA_FIND_ISSUE_URL, XM_LA_PROJECT, XM_LA_NEW_ISSUE_URL, XM_LA_FIND_TEST_ISSUE_URL]
+    # [ERP_XML_TO_SQL_FIND_ISSUE_URL, ERP_XML_TO_SQL_PROJECT, ERP_XML_TO_SQL_NEW_ISSUE_URL],
+    # [ADMIN_PAGE_FIND_ISSUE_URL, ADMIN_PAGE_PROJECT, ADMIN_PAGE_NEW_ISSUE_URL],
+    [XM_WEB_FIND_ISSUE_URL, XM_WEB_PROJECT, XM_WEB_NEW_ISSUE_URL, XM_WEB_FIND_TEST_ISSUE_URL],
+    [XM_API_FIND_ISSUE_URL, XM_API_PROJECT, XM_API_NEW_ISSUE_URL, XM_API_FIND_TEST_ISSUE_URL],
+    [ERP_WEB_FIND_ISSUE_URL, ERP_WEB_PROJECT, ERP_WEB_NEW_ISSUE_URL, ERP_WEB_FIND_TEST_ISSUE_URL],
+    [ERP_SERVER_FIND_ISSUE_URL, ERP_SERVER_PROJECT, ERP_SERVER_NEW_ISSUE_URL, ERP_SERVER_FIND_TEST_ISSUE_URL]
   ]
 
   # print("Environment variable>>> ", TEST_ISSUE_TEMP, TEST_ISSUE_DESC_TEMP)
@@ -156,6 +166,19 @@ class TestRPA_GitlabQA():
     issue_test_number = issue_test_url[issue_test_url.rfind("/") + 1:]
     file_name = "{0}-{1}-{2}".format(TEST_ISSUE_FILE_TEMP, iss_number, issue_test_number)
     print(">>>>New Test Issue url: ", issue_test_url)
+    # Add Test Label>>
+    time.sleep(3)
+    elem = self.wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[@data-qa-selector='edit_link']")))
+    self.driver.find_element(By.XPATH, "//button[@data-qa-selector='edit_link']").click() # Open textbox to input 
+    elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//input[@aria-label='Search labels']")))
+    elem_find_label = self.driver.find_element(By.XPATH, "//input[@aria-label='Search labels']")
+    elem_find_label.click()
+
+    elem_find_label.send_keys("Test")
+    elem_testcase = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
+    time.sleep(1)
+    elem_testcase.send_keys(Keys.SPACE)
+    # <<
     self.driver.find_element(By.XPATH, "//button[@data-qa-selector='related_issues_plus_button']").click() # Open textbox to input 
     self.driver.find_element(By.ID, "add-related-issues-form-input").send_keys(iss_number + " ") # Input related issue 
     self.driver.find_element(By.XPATH, "//button[@type='submit']").click() # Click Add button
@@ -202,6 +225,29 @@ class TestRPA_GitlabQA():
       print("Remove label needtotest, Exception: " + str(ex.msg))
       send_survey(user="remove", text=str.format(""":speech_balloon: *Error* on *Remove* label *Need_to_test*. :anger:\nPlease check this <{0}|issue>.""", url))
 
+  def update_test_label_on_test_issue(self):
+    for iss_number_item, issue_url_item, project_item, new_issue_url_item, issue_text_item in issue_link_list:
+      # update test issue
+      self.driver.get(issue_url_item)
+      time.sleep(3)
+      elem = self.wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[@data-qa-selector='edit_link']")))
+      self.driver.find_element(By.XPATH, "//button[@data-qa-selector='edit_link']").click() # Open textbox to input 
+      elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//input[@aria-label='Search labels']")))
+      elem_find_label = self.driver.find_element(By.XPATH, "//input[@aria-label='Search labels']")
+      elem_find_label.click()
+
+      elem_find_label.send_keys("Test")
+      time.sleep(1)
+      elem_testcase = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
+      time.sleep(1)
+      elem_testcase.send_keys(Keys.SPACE)
+
+      elem = self.wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@title='Edit title and description']")))
+      elem_edit = self.driver.find_element(By.XPATH, "//button[@title='Edit title and description']")
+      elem_edit.click()
+
+      time.sleep(1)
+
   def create_testcase_update_issue_update_db(self):
     for iss_number_item, issue_url_item, project_item, new_issue_url_item, issue_text_item in issue_link_list:
       # # create test issue
@@ -245,6 +291,16 @@ class TestRPA_GitlabQA():
         )
       issue_obj_list.append(item)
   
+  def collect_gitlab_test_issues(self):
+    for proj_url in project_links:
+      print(proj_url[3])
+      try:
+        self.driver.get(proj_url[3])
+        self.get_gitlab_issue_info(proj_url[1], proj_url[2])
+      except Exception as ex:
+        print("Collect Gitlab Test Issues, Exception: " + str(ex.msg))
+        send_survey(user="collect", text=str.format(""":speech_balloon: *Error* on *Collect* Gitlab Test Issues. :anger:\nPlease check this <{0}|issue>.""", proj_url[3]))
+
   def collect_gitlab_issues(self):
     for proj_url in project_links:
       print(proj_url[0])
@@ -346,6 +402,14 @@ WHERE id = {0};
     self.driver.find_element(By.ID, "user_password").send_keys(GITLAB_PASSWORD)
     submit_ele = self.driver.find_element(By.XPATH, "//button[@type='submit']")
     submit_ele.click()
+
+  def add_test_label(self):
+    print("RPA add_test_label")
+    self.gitlabsignin()
+    self.collect_gitlab_test_issues()
+    self.update_test_label_on_test_issue()
+
+    self.driver.close()
 
   def create_testcase(self):
     print("RPA create_testcase")
@@ -499,12 +563,16 @@ WHERE id = {0} and test_state = 'Create';
     self.finish_testcase()
     send_survey(user="AAAA", block=self.read_blocks(is_finishing=True, is_creating=False), text="Selenium result")
 
-  # def test_notification(self):
-  #   send_survey(user="AAAA", block=self.read_blocks(), text="Hello hhskdfjhfk")
-    
   def test_migrate_firebase_db(self):
     self.migrate_firebase_db()
 
+  # def test_add_test_label(self):
+  #   self.add_test_label()
+  #   # send_survey(user="AAAA", block=self.read_blocks(is_finishing=False, is_creating=True), text="Selenium result")
+    
+  # def test_notification(self):
+  #   send_survey(user="AAAA", block=self.read_blocks(), text="Hello hhskdfjhfk")
+    
   # def test_create_firebase_db(self):
   #   self.create_firebase_db()
 

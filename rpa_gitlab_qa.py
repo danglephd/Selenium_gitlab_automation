@@ -540,7 +540,7 @@ WHERE id = {0};
         for item in data:
           query = """UPDATE ISSUE
 SET test_state = '{1}'
-WHERE id = {0} and test_state = 'Create';
+WHERE id = {0} and test_state = 'Created';
 """.format(item.id, issue_item.test_state)
           sqlite.executeQuery(query) 
 

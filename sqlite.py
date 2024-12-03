@@ -94,9 +94,9 @@ def getListIssue(criteria):
             print("test_url = ", row[4])
             print("test_no = ", row[5])
             print("issue_no = ", row[6])
-            print("duedate = ", row[7])
-            print("issue_url = ", row[8], "\n")
-            data.append(GitLab_Issue_Obj(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
+            print("duedate = ", row[8])
+            print("issue_url = ", row[7], "\n")
+            data.append(GitLab_Issue_Obj(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]))
 
         # print("Operation done successfully")
         conn.close()
@@ -109,10 +109,9 @@ class GitLab_Issue_Obj:
         self.id = id
         self.issue_number = issue_number
         self.issue_url = issue_url
-        self.duedate = duedate
         self.issue_test_number = issue_test_number
         self.issue_test_url = issue_test_url
         self.project = project
         self.test_state = test_state
-
         self.path = path
+        self.duedate = duedate

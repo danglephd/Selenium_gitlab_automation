@@ -519,7 +519,7 @@ WHERE id = {0};
         if item_to_update is None:
           save_item.append(issue_item)
         else:
-          firebase_db.update(item_to_update)
+          firebase_db.update(item_to_update.id, issue_item)
 
     if len(save_item) > 0:
       print('>>>Save len: ',  len(save_item) )

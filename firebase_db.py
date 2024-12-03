@@ -26,6 +26,7 @@ def create_db():
     #                 'issue_test_url': 'url://xx',
     #                 'issue_test_number': 11,
     #                 'issue_url': 'url://xx',
+    #                 'duedate': 'duedate',
     #                 'issue_number': 11
     #             }
     #         }
@@ -38,6 +39,7 @@ def create_db():
             'issue_test_url': gitLab_issue_obj.issue_test_url,
             'issue_test_number': gitLab_issue_obj.issue_test_number,
             'issue_url': gitLab_issue_obj.issue_url,
+            'duedate': gitLab_issue_obj.duedate,
             'issue_number': gitLab_issue_obj.issue_number
         })
 
@@ -54,6 +56,7 @@ def save(gitLab_issue_obj):
             'issue_test_url': item.issue_test_url,
             'issue_test_number': item.issue_test_number,
             'issue_url': item.issue_url,
+            'duedate': item.duedate,
             'issue_number': item.issue_number
         })
 
@@ -89,8 +92,16 @@ def getListIssue(criteria):
         for key, val in snapshot.items():
             print('{0} => {1}'.format(key, val))
             data.append(GitLab_Issue_Obj(
-                id=key, project=val['project'], path=val['path'], test_state=val['test_state'], 
-                issue_test_url=val['issue_test_url'], issue_test_number=val['issue_test_number'], issue_number=val['issue_number'], issue_url=val['issue_url']))
+                id=key, 
+                project=val['project'], 
+                path=val['path'], 
+                test_state=val['test_state'], 
+                issue_test_url=val['issue_test_url'], 
+                issue_test_number=val['issue_test_number'], 
+                issue_number=val['issue_number'], 
+                issue_url=val['issue_url'],
+                duedate=val['duedate']
+                ))
         return data
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
@@ -106,7 +117,7 @@ def getAllIssue():
             # print('{0} => {1}'.format(key, val))
             data.append(GitLab_Issue_Obj(
                 id=0, project=val['project'], path=val['path'], test_state=val['test_state'], 
-                issue_test_url=val['issue_test_url'], issue_test_number=val['issue_test_number'], issue_number=val['issue_number'], issue_url=val['issue_url']))
+                issue_test_url=val['issue_test_url'], issue_test_number=val['issue_test_number'], issue_number=val['issue_number'], issue_url=val['issue_url'], duedate=val['duedate']))
         return data
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")

@@ -1,6 +1,12 @@
 # Selenium_gitlab_automation
 An project use Selenium to auto generate gitlab test case 
 
+## Update
+
+- Add new column duedate:
+```
+ALTER TABLE ISSUE ADD COLUMN duedate char(50);
+```
 
 
 ### WHAT THIS PROJECT FOR

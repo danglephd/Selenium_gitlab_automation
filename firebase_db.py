@@ -60,12 +60,13 @@ def save(gitLab_issue_obj):
             'issue_number': item.issue_number
         })
 
-def update(gitLab_issue_obj):
-    print('>>>update')
+def update(id, gitLab_issue_obj):
+    print('>>>update ', id, gitLab_issue_obj.duedate)
     ref = db.reference('issues')
-    box_ref = ref.child(gitLab_issue_obj.id)
+    box_ref = ref.child(id)
     box_ref.update({
-        'test_state': gitLab_issue_obj.test_state
+        'test_state': gitLab_issue_obj.test_state,
+        'duedate': gitLab_issue_obj.duedate,
     })
 
 def update_testcase_status(issue_url):

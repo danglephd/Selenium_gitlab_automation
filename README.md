@@ -5,7 +5,9 @@ An project use Selenium to auto generate gitlab test case
 
 - Add new column duedate:
 ```
-ALTER TABLE ISSUE ADD COLUMN duedate char(50);
+ALTER TABLE ISSUE DROP COLUMN duedate;
+
+ALTER TABLE ISSUE ADD COLUMN duedate char(50) default ' ';
 ```
 
 

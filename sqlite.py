@@ -36,7 +36,7 @@ def save(gitLab_issue_obj):
         # print(">>item", item.project, item.path, item.test_state, item.issue_test_url, item.issue_test_number, item.issue_number, item.issue_url, item.duedate)
         conn.execute("""INSERT INTO ISSUE (project, path, test_state, issue_test_url, issue_test_number, issue_number, issue_url, duedate) 
                      VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')"""
-                     .format(item.project, item.path, item.test_state, item.issue_test_url, item.issue_test_number, item.issue_number, item.issue_url, item.duedate))
+                     .format(item.project, item.path, item.test_state, item.issue_test_url, item.issue_test_number, item.issue_number, item.issue_url, " "))
 
     conn.commit()
     # print("Records insert successfully")
@@ -56,7 +56,7 @@ def initTable(lst_issue):
         print(">>item", item.project, item.path, item.test_state, item.issue_test_url, item.issue_test_number, item.issue_number, item.issue_url, item.duedate)
         conn.execute("""INSERT INTO ISSUE (project, path, test_state, issue_test_url, issue_test_number, issue_number, issue_url, duedate) 
                      VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')"""
-                     .format(item.project, item.path, item.test_state, item.issue_test_url, item.issue_test_number, item.issue_number, item.issue_url, item.duedate))
+                     .format(item.project, item.path, item.test_state, item.issue_test_url, item.issue_test_number, item.issue_number, item.issue_url, " "))
 
     conn.commit()
     print("Records created successfully")

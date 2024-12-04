@@ -134,10 +134,12 @@ class TestRPA_Gitlab_Dueday():
         # print('>>>li', li)
         att = li.get_attribute("data-qa-issuable-title")
         # print('>>>att li', att)
-        ele_issue_name = li.find_element(By.CLASS_NAME, "issuable-reference")
-        issue_no_txt = ele_issue_name.text
-        date_obj = issue_duedate_txt = ""
-        datetime.min
+        ele_issue_number = li.find_element(By.CLASS_NAME, "issuable-reference")
+        issue_no_txt = ele_issue_number.text
+        date_obj = issue_duedate_txt = "" 
+        tag_a = li.find_element(By.XPATH, ".//a[@class='gl-link issue-title-text']")
+        issue_url = tag_a.get_attribute("href")
+        # print('>>>tag_a_s', tag_a, issue_url)
         try:
           ele_issue_duedate = li.find_element(By.CLASS_NAME, "issuable-due-date")
           issue_duedate_txt = ele_issue_duedate.text
@@ -148,7 +150,7 @@ class TestRPA_Gitlab_Dueday():
         # print(">>>>issue_duedate_txt: ", issue_duedate_txt)
         # print(">>>>date_obj: ", date_obj)
         iss_number = issue_no_txt[1:]
-        issue_duedate_list.append([iss_number, issue_duedate_txt])
+        issue_duedate_list.append([iss_number, issue_duedate_txt, issue_url])
       print(">>>>issue_duedate_list: ", issue_duedate_list)
       return 
     except TimeoutException as ex:
@@ -185,8 +187,8 @@ class TestRPA_Gitlab_Dueday():
       for row in issue_duedate_list:
         query = """UPDATE ISSUE
           SET duedate = '{0}'
-          WHERE id = {1};
-          """.format(row[1], row[0])
+          WHERE issue_number = {1} AND issue_url = '{2}';
+          """.format(row[1], row[0], row[2])
         # print(query)
         sqlite.executeQuery(query) # Save to db
         

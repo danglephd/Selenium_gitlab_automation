@@ -199,18 +199,15 @@ class TestRPA_GitlabQA():
         print('>>>li', li)
         att = li.get_attribute("data-qa-issuable-title")
         print('>>>att li', att)
-        tag_a_s = li.find_elements(By.XPATH, "//a[@class='gl-link issue-title-text']")
-        # tag_a = x.find_elements_by_tag_name('a')
-        for tag_a in tag_a_s:
-          print(">>>>tag_a: ", tag_a)
-          issue_url = tag_a.get_attribute("href")
-          issue_text = tag_a.get_attribute("text")
-          print(">>>>url: ", issue_url)
-          print(">>>>text: ", issue_text)
-          iss_number = issue_url[issue_url.rfind("/") + 1:]
-          print(">>>>iss Number: ", iss_number)
-          issue_link_list.append([iss_number, issue_url, project, new_issue_url, issue_text])
-        break # stop run over the li tags
+        tag_a = li.find_element(By.XPATH, ".//a[@class='gl-link issue-title-text']")
+        print(">>>>tag_a: ", tag_a)
+        issue_url = tag_a.get_attribute("href")
+        issue_text = tag_a.get_attribute("text")
+        print(">>>>url: ", issue_url)
+        print(">>>>text: ", issue_text)
+        iss_number = issue_url[issue_url.rfind("/") + 1:]
+        print(">>>>iss Number: ", iss_number)
+        issue_link_list.append([iss_number, issue_url, project, new_issue_url, issue_text])
       # print(">>>>issue_link_list: ", issue_link_list)
       return 
     except TimeoutException as ex:

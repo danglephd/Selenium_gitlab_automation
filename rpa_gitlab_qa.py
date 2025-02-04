@@ -524,21 +524,28 @@ WHERE id = {0};
 
   def migrate_SQLiteDb(self):
     print('>>>migrate_SQLiteDb')
-    issue_list = firebase_db.getAllIssue()
-    print('>>>len', len(issue_list))
+    fb_issue_list = firebase_db.getAllIssue()
+    print('>>>len', len(fb_issue_list))
 
-    for issue_item in issue_list:
+    for fb_issue_item in fb_issue_list:
       criteria = "WHERE issue_url = '{0}' and issue_test_url = '{1}'"
-      data = sqlite.getListIssue(str.format(criteria, issue_item.issue_url, issue_item.issue_test_url))
-      if len(data) <= 0:
-        sqlite.save([issue_item]) 
+      sqlite_issue_lst = sqlite.getListIssue(str.format(criteria, fb_issue_item.issue_url, fb_issue_item.issue_test_url))
+      isFinishIssue = "and test_state = 'Created'"
+
+      if fb_issue_item.test_state == 'Done' or  fb_issue_item.test_state == 'Finish' or fb_issue_item.test_state == 'Old':
+        isFinishIssue = ""
       else:
-        print('>>>Exist item, ', len(data))
-        for item in data:
+        isFinishIssue = "and test_state = 'Created'"
+
+      if len(sqlite_issue_lst) <= 0:
+        sqlite.save([fb_issue_item]) 
+      else:
+        print('>>>Exist item, ', len(sqlite_issue_lst))
+        for sqlite_item in sqlite_issue_lst:
           query = """UPDATE ISSUE
 SET test_state = '{1}'
-WHERE id = {0} and test_state = 'Created';
-""".format(item.id, issue_item.test_state)
+WHERE id = {0} {2};
+""".format(sqlite_item.id, fb_issue_item.test_state, isFinishIssue)
           sqlite.executeQuery(query) 
 
 

@@ -3,9 +3,8 @@ from selenium.webdriver.support import expected_conditions
 from selenium.common.exceptions import TimeoutException
 
 
-def get_gitlab_issue_info(driver, wait, project, new_issue_url):
+def get_gitlab_issue_info(driver, wait, project, new_issue_url, issue_link_list):
     print(">Get Gitlab Issue Information")
-    issue_link_list = []
     try:
       elem = wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//ul[@class='content-list issuable-list issues-list']/li")))
       # print(">>>>elem: ", elem)
@@ -29,4 +28,3 @@ def get_gitlab_issue_info(driver, wait, project, new_issue_url):
       print("TimeoutException has been thrown. " + str(ex.msg))
       # send_survey(user="get", text=""":interrobang::interrobang::interrobang: *Error* on *Get Gitlab Issue Information.* :broken_heart::broken_heart::broken_heart:\nPlease get help from your Administrator.""")
     print("project issue_link_list. len ", len(issue_link_list))
-    return issue_link_list

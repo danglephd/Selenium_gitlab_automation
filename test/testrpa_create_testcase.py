@@ -9,7 +9,6 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.common.exceptions import TimeoutException
-from src.modules.slack import send
 
 class TestRPA_Create_Testcase():
 
@@ -29,4 +28,4 @@ class TestRPA_Create_Testcase():
 
     def test_create_testcase(self):
         create_gitlab.create_testcase(self.driver, self.wait)
-        send.send_survey(user="AAAA", block=self.read_blocks(is_finishing=False, is_creating=True), text="Selenium result")
+        self.driver.close()

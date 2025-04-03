@@ -115,6 +115,56 @@ def getListIssue(criteria):
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
 
+def getListIssue2(criteria):
+    """
+    Get list of issues with multiple values
+    criteria format: [field, operator, value_list]
+    Example: ['issue_url', 'IN', ['url1', 'url2', 'url3']]
+    """
+    print('>>>getListIssue2', criteria)
+    try:
+        if len(criteria) != 3:
+            raise ValueError("Invalid criteria format. Expected: [field, operator, value_list]")
+            
+        field, operator, value_list = criteria
+        if not isinstance(value_list, list):
+            raise ValueError("value_list must be a list")
+            
+        ref = db.reference('issues')
+        data = []
+        
+        # Get all issues first
+        snapshot = ref.get()
+        if not snapshot:
+            return data
+            
+        # Process all issues in memory
+        for key, val in snapshot.items():
+            try:
+                # Check if the field exists and matches any value in the list
+                if field in val and val[field] in value_list:
+                    duedate = val.get('duedate', " ")
+                    
+                    data.append(GitLab_Issue_Obj(
+                        id=key, 
+                        project=val['project'], 
+                        path=val['path'], 
+                        test_state=val['test_state'], 
+                        issue_test_url=val['issue_test_url'], 
+                        issue_test_number=val['issue_test_number'], 
+                        issue_number=val['issue_number'], 
+                        issue_url=val['issue_url'],
+                        duedate=duedate
+                    ))
+            except Exception as e:
+                print(f"Error processing issue {key}: {str(e)}")
+                continue
+                
+        return data
+    except Exception as err:
+        print(f"Unexpected {err=}, {type(err)=}")
+        return []
+
 def getAllIssue():
     print('>>>getAllIssue')
     ref = db.reference('issues')

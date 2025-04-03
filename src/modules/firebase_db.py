@@ -1,28 +1,71 @@
-from .db import sqlite, firebase_db
+from .db import sqlite, firebase
+import logging
+import os
+
+# Configure logging
+log_dir = "logs"
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
+log_file = os.path.join(log_dir, "firebase_migration.log")
+
+# Create logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# Create handlers
+file_handler = logging.FileHandler(log_file)
+console_handler = logging.StreamHandler()
+
+# Create formatters
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+console_handler.setFormatter(formatter)
+
+# Add handlers to logger
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)
 
 def migrate_firebase_db():
-    print('>>>migrate_firebase_db')
-    criteria = ""
-    issue_list = sqlite.getListIssue(criteria)
-    print('>>>len', len(issue_list))
-    save_item = []
-    for issue_item in issue_list:
-        criteria = ['issue_url', issue_item.issue_url]
-        data = firebase_db.getListIssue(criteria)
-        if len(data) <= 0:
-            save_item.append(issue_item)
-        else:
-            print('>>>Exist item, ', len(data))
-            item_to_update = None
-            for item in data:
-                if item.issue_test_url == issue_item.issue_test_url:
-                    item_to_update = item
-                    break
-                if item_to_update is None:
+    """
+    Migrate data from SQLite to Firebase
+    """
+    logger.info("Starting migration from SQLite to Firebase")
+    try:
+        criteria = ""
+        issue_list = sqlite.getListIssue(criteria)
+        logger.info(f"Found {len(issue_list)} issues in SQLite")
+        
+        save_item = []
+        for issue_item in issue_list:
+            try:
+                criteria = ['issue_url', issue_item.issue_url]
+                data = firebase.getListIssue(criteria)
+                
+                if not data:
                     save_item.append(issue_item)
                 else:
-                    firebase_db.update(item_to_update.id, issue_item)
+                    item_to_update = None
+                    for item in data:
+                        if item.issue_test_url == issue_item.issue_test_url:
+                            item_to_update = item
+                            break
+                            
+                    if item_to_update is None:
+                        save_item.append(issue_item)
+                    else:
+                        firebase.update(item_to_update.id, issue_item)
+                        
+            except Exception as e:
+                logger.error(f"Error processing issue {issue_item.issue_url}: {str(e)}")
+                continue
 
-    if len(save_item) > 0:
-        print('>>>Save len: ',  len(save_item) )
-        firebase_db.save(save_item) 
+        if save_item:
+            logger.info(f"Saving {len(save_item)} new issues")
+            firebase.save(save_item)
+            
+        logger.info("Migration completed successfully")
+        
+    except Exception as e:
+        logger.error(f"Migration failed: {str(e)}")
+        raise 

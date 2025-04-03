@@ -102,7 +102,7 @@ def getListIssue(criteria):
         conn.close()
         return data
     except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
+        print(f"GetListIssue Unexpected {err=}, {type(err)=}")
         
 class GitLab_Issue_Obj:
     def __init__(self, id, project, path, test_state, issue_test_url, issue_test_number, issue_number, issue_url, duedate = " "):

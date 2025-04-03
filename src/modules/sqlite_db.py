@@ -1,4 +1,4 @@
-from .db import sqlite, firebase_db
+from .db import sqlite, firebase
 import logging
 from typing import List
 import re
@@ -183,7 +183,7 @@ def migrate_SQLiteDb():
     logger.info("Starting migration from Firebase to SQLite")
     try:
         # Get all issues from Firebase
-        fb_issue_list = firebase_db.getAllIssue()
+        fb_issue_list = firebase.getAllIssue()
         logger.info(f"Found {len(fb_issue_list)} issues in Firebase")
 
         # Process in batches for better performance

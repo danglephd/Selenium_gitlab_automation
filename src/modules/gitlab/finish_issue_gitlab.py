@@ -1,7 +1,7 @@
 import os
 
 from .signin_page import gitlabsignin
-from ..db import sqlite, firebase_db
+from ..db import sqlite
 from .update_testcase_page import onfinish_update_label_and_return_Query, onfinish_add_desc_and_attach_file
 
 from dotenv import load_dotenv

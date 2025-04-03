@@ -43,8 +43,10 @@ def migrate_firebase_db():
                 data = firebase.getListIssue(criteria)
                 
                 if not data:
+                    logger.info(f"New issue found: {issue_item.issue_url}")
                     save_item.append(issue_item)
                 else:
+                    logger.info(f"Existing issue found: {issue_item.issue_url}")
                     item_to_update = None
                     for item in data:
                         if item.issue_test_url == issue_item.issue_test_url:
@@ -52,8 +54,10 @@ def migrate_firebase_db():
                             break
                             
                     if item_to_update is None:
+                        logger.info(f"New test URL found: {issue_item.issue_test_url}")
                         save_item.append(issue_item)
                     else:
+                        logger.info(f"Updating issue: {issue_item.issue_url}")
                         firebase.update(item_to_update.id, issue_item)
                         
             except Exception as e:

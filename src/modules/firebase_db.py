@@ -28,6 +28,9 @@ console_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(console_handler)
 
+def create_firebase_db():
+    firebase.create_db()
+
 def _retry_operation(operation, max_retries=3, delay=1):
     """Retry an operation with exponential backoff"""
     for attempt in range(max_retries):

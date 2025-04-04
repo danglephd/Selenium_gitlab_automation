@@ -2,8 +2,12 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 
-# import .sqlite
+# import sqlite module
+from . import sqlite
 from .sqlite import GitLab_Issue_Obj
+
+# Constants
+ISSUES_COLLECTION = 'issues_2'
 
 # Fetch the service account key JSON file contents
 cred = credentials.Certificate('./Firebase/projp21-17b04-firebase-adminsdk-kgxr3-5292b73c39.json')
@@ -15,7 +19,7 @@ firebase_admin.initialize_app(cred, {
 def create_db():
     print('>>>create_db')
     lst_gitLab_issue_obj = sqlite.getListIssue("")
-    ref = db.reference('issues')
+    ref = db.reference(ISSUES_COLLECTION)
     # ref.set({
     #     'issues': 
     #         {
@@ -46,7 +50,7 @@ def create_db():
 
 def save(gitLab_issue_obj):
     print('>>>save')
-    ref = db.reference('issues')
+    ref = db.reference(ISSUES_COLLECTION)
     
     for item in gitLab_issue_obj:
         ref.push({
@@ -62,7 +66,7 @@ def save(gitLab_issue_obj):
 
 def update(id, gitLab_issue_obj):
     print('>>>update ', id, gitLab_issue_obj.duedate)
-    ref = db.reference('issues')
+    ref = db.reference(ISSUES_COLLECTION)
     box_ref = ref.child(id)
     box_ref.update({
         'test_state': gitLab_issue_obj.test_state,
@@ -72,7 +76,7 @@ def update(id, gitLab_issue_obj):
 def update_testcase_status(issue_url):
     print('>>>update_testcase_status')
     try:
-        ref = db.reference('issues')
+        ref = db.reference(ISSUES_COLLECTION)
         snapshot = ref.order_by_child("issue_url").equal_to(issue_url).limit_to_first(2).get()
         for key, val in snapshot.items():
             print(f"issue_key {key=}")
@@ -86,7 +90,7 @@ def update_testcase_status(issue_url):
 def getListIssue(criteria):
     print('>>>getListIssue', criteria)
     try:
-        ref = db.reference('issues')
+        ref = db.reference(ISSUES_COLLECTION)
         data = []
         snapshot = ref.order_by_child(criteria[0]).equal_to(criteria[1]).get()
         
@@ -130,7 +134,7 @@ def getListIssue2(criteria):
         if not isinstance(value_list, list):
             raise ValueError("value_list must be a list")
             
-        ref = db.reference('issues')
+        ref = db.reference(ISSUES_COLLECTION)
         data = []
         
         # Get all issues first
@@ -167,7 +171,7 @@ def getListIssue2(criteria):
 
 def getAllIssue():
     print('>>>getAllIssue')
-    ref = db.reference('issues')
+    ref = db.reference(ISSUES_COLLECTION)
     data = []
     snapshot = ref.get()
     

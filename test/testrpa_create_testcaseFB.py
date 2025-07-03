@@ -14,6 +14,7 @@ class TestRPA_Create_Testcase_FB:
         options = webdriver.ChromeOptions()
         # options.add_argument("--headless")  # Chạy trình duyệt ở chế độ headless
         options.add_argument("--disable-gpu")
+        options.add_argument('--log-level=3')  # INFO = 0, WARNING = 1, LOG_ERROR = 2, LOG_FATAL = 3
         options.add_argument("--window-size=1920,1080")
         self.driver = webdriver.Chrome(service=service, options=options)
         self.wait = WebDriverWait(self.driver, delay)

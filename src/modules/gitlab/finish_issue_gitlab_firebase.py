@@ -56,8 +56,8 @@ def finish_testcase(driver, wait):
           issue_finished_success_list.append(row)
           firebase.update_issue_test_state(row.id, 'Done')
         else :
-           # Nếu file không hợp lệ thì gửi thông báo lỗi qua Slack
-           slack_protocol.send_survey(user="file_error", text=str.format(""":speech_balloon: *Error* on *Attach file* (file not exist or too large). :anger:\nPlease check this <{0}|issue>. Path at: <{1}>""", row.issue_url, row.path))
+          # Nếu file không hợp lệ thì gửi thông báo lỗi qua Slack
+          slack_protocol.send_survey(user="file_error", text=str.format(""":speech_balloon: *Error* on *Attach file* (file not exist or too large). :anger:\nPlease check this <{0}|issue>. Path at: <{1}>""", row.issue_url, row.path))
     if len(issue_finished_success_list) > 0:
       slack_protocol.send_survey(user="AAAA", block=slack_protocol.read_blocks([], issue_finished_success_list, is_finishing=True, is_creating=False), text="Selenium result")
     else:

@@ -41,6 +41,7 @@ def collect_finish_gitlab_issues(issue_finished_list):
 def finish_testcase(driver, wait):
     print("RPA finish_testcase")
     issue_finished_list = []
+    issue_finished_success_list = []
     collect_finish_gitlab_issues(issue_finished_list)
     if(len(issue_finished_list) > 0):
       gitlabsignin(driver, SIGN_IN_URL, GITLAB_USERNAME, GITLAB_PASSWORD)
@@ -52,11 +53,15 @@ def finish_testcase(driver, wait):
         if isValidFile:
           onfinish_add_desc_and_attach_file(driver, wait, test_issue_url=row.issue_test_url, project=row.project, test_file_path=row.path)
           query = onfinish_update_label_and_return_Query(driver, wait, issue_url_item=row.issue_url, id=row.id)
+          issue_finished_success_list.append(row)
           firebase.update_issue_test_state(row.id, 'Done')
         else :
            # Nếu file không hợp lệ thì gửi thông báo lỗi qua Slack
-           slack_protocol.send_survey(user="file_error", text=str.format(""":speech_balloon: *Error* on *Attach file* (file not exist or too large). :anger:\nPlease check this <{0}|issue>. Path at: <{1}|path>""", row.issue_url, row.path))
-    slack_protocol.send_survey(user="AAAA", block=slack_protocol.read_blocks([], issue_finished_list, is_finishing=True, is_creating=False), text="Selenium result")
+           slack_protocol.send_survey(user="file_error", text=str.format(""":speech_balloon: *Error* on *Attach file* (file not exist or too large). :anger:\nPlease check this <{0}|issue>. Path at: <{1}>""", row.issue_url, row.path))
+    if len(issue_finished_success_list) > 0:
+      slack_protocol.send_survey(user="AAAA", block=slack_protocol.read_blocks([], issue_finished_success_list, is_finishing=True, is_creating=False), text="Selenium result")
+    else:
+      slack_protocol.send_survey(user="no_success", text=":speech_balloon: No issues were successfully finished due to file errors or no issues found.")
 
 def checkFileIsValid(file_path):
     """

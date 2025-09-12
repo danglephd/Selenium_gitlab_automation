@@ -46,8 +46,42 @@ def finish_testcase(driver, wait):
       gitlabsignin(driver, SIGN_IN_URL, GITLAB_USERNAME, GITLAB_PASSWORD)
       for row in issue_finished_list:
         # id, project, path, test_state, issue_test_url, issue_test_number, issue_number, issue_url
-        onfinish_add_desc_and_attach_file(driver, wait, test_issue_url=row.issue_test_url, project=row.project, test_file_path=row.path)
-        query = onfinish_update_label_and_return_Query(driver, wait, issue_url_item=row.issue_url, id=row.id)
         
-        firebase.update_issue_test_state(row.id, 'Done')
+        isValidFile = checkFileIsValid(row.path)
+        # Kiểm tra file ở row.path nếu kích thước < 10 MB thì  
+        if isValidFile:
+          onfinish_add_desc_and_attach_file(driver, wait, test_issue_url=row.issue_test_url, project=row.project, test_file_path=row.path)
+          query = onfinish_update_label_and_return_Query(driver, wait, issue_url_item=row.issue_url, id=row.id)
+          firebase.update_issue_test_state(row.id, 'Done')
+        else :
+           # Nếu file không hợp lệ thì gửi thông báo lỗi qua Slack
+           slack_protocol.send_survey(user="file_error", text=str.format(""":speech_balloon: *Error* on *Attach file* (file not exist or too large). :anger:\nPlease check this <{0}|issue>. Path at: <{1}|path>""", row.issue_url, row.path))
     slack_protocol.send_survey(user="AAAA", block=slack_protocol.read_blocks([], issue_finished_list, is_finishing=True, is_creating=False), text="Selenium result")
+
+def checkFileIsValid(file_path):
+    """
+    Kiểm tra file có tồn tại và kích thước nhỏ hơn 10MB.
+
+    Args:
+        file_path (str): Đường dẫn đến file cần kiểm tra
+
+    Returns:
+        bool: True nếu file tồn tại và kích thước < 10MB, False trong các trường hợp còn lại
+    """
+    try:
+        if not file_path or not os.path.isfile(file_path):
+            print(f"File không tồn tại: {file_path}")
+            return False
+            
+        max_size = 10 * 1024 * 1024  # 10MB
+        file_size = os.path.getsize(file_path)
+        
+        is_valid = file_size < max_size
+        if not is_valid:
+            print(f"File quá lớn ({file_size / (1024*1024):.2f}MB): {file_path}")
+            
+        return is_valid
+        
+    except Exception as e:
+        print(f"Lỗi khi kiểm tra file: {str(e)}")
+        return False

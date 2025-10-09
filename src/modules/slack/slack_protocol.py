@@ -31,7 +31,7 @@ def send_survey(user, text, block=None, channel = CHANNEL_ID):
         print("Error sending message: {}".format(e))
 
 def read_blocks(issue_obj_list, issue_finished_list, is_finishing=False, is_creating=False):
-    issue_summary = "*Collected {0} issue(s):*\n{1}"
+    issue_summary = "*Collected {0} issue(s):*"
     finish_summary = "*Finish {0} issue(s):*"
 
     data = [
@@ -58,9 +58,8 @@ def read_blocks(issue_obj_list, issue_finished_list, is_finishing=False, is_crea
             }
         )
         data.append(get_list_issue_by_table(issue_finished_list))
-
     if is_creating:
-        issue_summary = issue_summary.format(len(issue_obj_list), get_list_issue(issue_obj_list))
+        issue_summary = issue_summary.format(len(issue_obj_list))
         data.append(
             {
                 "type": "section",
@@ -72,6 +71,7 @@ def read_blocks(issue_obj_list, issue_finished_list, is_finishing=False, is_crea
                 ]
             }
         )
+        data.append(get_list_issue_by_table(issue_obj_list))
     data.append({"type": "divider"})
         
     return data

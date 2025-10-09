@@ -104,5 +104,8 @@ def create_testcase(driver, wait):
   
   firebase.save(issue_obj_list) # Save to db
 
-  slack_protocol.send_survey(user="AAAA", block=slack_protocol.read_blocks(issue_obj_list, [], is_finishing=False, is_creating=True), text="Selenium result")
+  if len(issue_obj_list) > 0:
+    slack_protocol.send_survey(user="AAAA", block=slack_protocol.read_blocks(issue_obj_list, [], is_finishing=False, is_creating=True), text="Selenium result")
+  else:
+    slack_protocol.send_survey(user="no_success", text=":speech_balloon: No new issue found.")
 

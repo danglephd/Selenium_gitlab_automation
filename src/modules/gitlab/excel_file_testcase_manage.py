@@ -1,7 +1,7 @@
-
 import shutil
 import os
 from openpyxl import load_workbook
+from datetime import datetime
 
 def create_testcase_file(iss_number, project, folder_name, file_name):
     print("create_testcase_file", iss_number, project, folder_name, file_name)
@@ -37,4 +37,23 @@ def update_file_testcase(path, iss_test_number, issue_desc, test_scenario):
     sheet["B14"] = test_scenario
     
     #save the file
+    workbook.save(path)
+
+def update_finish_date_file_testcase(path):
+    print("Update finish date file testcase", path)
+    
+    #load excel file
+    workbook = load_workbook(filename=path)
+    
+    #open workbook
+    sheet = workbook.active
+
+    # Merge cell F6 và F7
+    sheet.merge_cells('F6:G6')
+
+    # Gán giá trị ngày hiện tại theo format DD/MM/YYYY
+    today_str = datetime.now().strftime("%d/%m/%Y")
+    sheet["F6"] = today_str
+
+    # save the file
     workbook.save(path)

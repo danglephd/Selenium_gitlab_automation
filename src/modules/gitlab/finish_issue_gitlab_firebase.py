@@ -7,6 +7,7 @@ from .update_testcase_page import onfinish_update_label_and_return_Query, onfini
 from dotenv import load_dotenv
 
 from ..slack import slack_protocol
+from .excel_file_testcase_manage import update_finish_date_file_testcase
 
 try:
   load_dotenv()
@@ -51,6 +52,8 @@ def finish_testcase(driver, wait):
         isValidFile = checkFileIsValid(row.path)
         # Kiểm tra file ở row.path nếu kích thước < 10 MB thì  
         if isValidFile:
+          # Cập nhật ngày hoàn thành testcase trên file Excel
+          update_finish_date_file_testcase(row.path)
           onfinish_add_desc_and_attach_file(driver, wait, test_issue_url=row.issue_test_url, project=row.project, test_file_path=row.path)
           query = onfinish_update_label_and_return_Query(driver, wait, issue_url_item=row.issue_url, id=row.id)
           issue_finished_success_list.append(row)

@@ -88,6 +88,7 @@ def get_list_issue_by_table(issue_list):
     Hiển thị danh sách issue dưới dạng Slack table object.
     Header 1: Issue URL
     Header 2: Test URL
+    Header 3: Project Name
     Dữ liệu lấy từ issue_list.
     """
     # Tạo header: mỗi dòng là một list các cell
@@ -116,6 +117,21 @@ def get_list_issue_by_table(issue_list):
                         {
                             "type": "text",
                             "text": "Test URL",
+                            "style": {"bold": True}
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "rich_text",
+            "elements": [
+                {
+                    "type": "rich_text_section",
+                    "elements": [
+                        {
+                            "type": "text",
+                            "text": "Project Name",
                             "style": {"bold": True}
                         }
                     ]
@@ -152,6 +168,20 @@ def get_list_issue_by_table(issue_list):
                                 "type": "link",
                                 "url": getattr(issue, "issue_test_url", ""),
                                 "text": str(getattr(issue, "issue_test_number", getattr(issue, "issue_test_url", "")))
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "rich_text",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": getattr(issue, "project", "")
                             }
                         ]
                     }

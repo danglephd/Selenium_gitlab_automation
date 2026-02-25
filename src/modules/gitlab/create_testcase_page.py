@@ -32,7 +32,7 @@ def oncreate_test_issue_and_file(driver, wait, TEST_ISSUE_TEMP, TEST_ISSUE_DESC_
     elem_find_label = driver.find_element(By.XPATH, "//input[@aria-label='Search labels']")
     elem_find_label.click()
 
-    elem_find_label.send_keys("Test")
+    elem_find_label.send_keys("type:Test")
     elem_testcase = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
     time.sleep(1)
     elem_testcase.send_keys(Keys.SPACE)

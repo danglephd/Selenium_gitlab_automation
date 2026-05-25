@@ -18,11 +18,13 @@ class TestRPA_Create_Testcase_FB:
         self.driver = webdriver.Chrome(service=service, options=options)
         self.wait = WebDriverWait(self.driver, delay)
         self.vars = {}
-        print("Setup completed")
+        with open("collect-issue.log", "w", encoding="utf-8") as f:
+            f.write("Setup completed\n")
 
     def teardown_method(self, method):
         self.driver.quit()
-        print("Teardown completed")
+        with open("collect-issue.log", "a", encoding="utf-8") as f:
+            f.write("Teardown completed\n")
 
     def test_create_testcase(self):
         try:

@@ -69,7 +69,7 @@ def get_gitlab_issue_info(driver, wait, project, new_issue_url, issue_link_list)
             for idx, li in enumerate(elems, 1):
                 try:
                     att = li.get_attribute("data-qa-issuable-title")
-                    tag_a = li.find_element(By.XPATH, ".//a[@class='gl-link issue-title-text']")
+                    tag_a = li.find_element(By.XPATH, ".//a[@class='issue-title-text gl-text-base gl-link']")
                     issue_url = tag_a.get_attribute("href")
                     issue_text = tag_a.get_attribute("text")
                     iss_number = issue_url[issue_url.rfind("/") + 1:]

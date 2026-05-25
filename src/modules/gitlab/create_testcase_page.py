@@ -24,8 +24,11 @@ def oncreate_test_issue_and_file(driver, wait, TEST_ISSUE_TEMP, TEST_ISSUE_DESC_
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with open("collect-issue.log", "a", encoding="utf-8") as f:
         f.write(f"[{timestamp}]       [2/6] Filling issue title: {issue_test_name}\n")
-    
-    driver.find_element(By.ID, "work-item-title-37").send_keys(issue_test_name)
+
+    # add wait for input appear
+    wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "input[data-testid='work-item-title-input']")))
+
+    driver.find_element(By.CSS_SELECTOR, "input[data-testid='work-item-title-input']").send_keys(issue_test_name)
     
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with open("collect-issue.log", "a", encoding="utf-8") as f:

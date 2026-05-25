@@ -63,7 +63,7 @@ def get_gitlab_issue_info(driver, wait, project, new_issue_url, issue_link_list)
         initial_list_length = len(issue_link_list)
         
         try:
-            elems = driver.find_elements(By.XPATH, "//div[@class='issuable-list-container']/ul/li")
+            elems = driver.find_elements(By.XPATH, "//div[contains(@class, 'issuable-list-container')]/ul/li")
             write_log(f"  Found {len(elems)} issue element(s)")
             
             for idx, li in enumerate(elems, 1):

@@ -1,17 +1,7 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.common.exceptions import TimeoutException
-from datetime import datetime
-
-def write_log(message):
-    """Helper function to write logs to file with timestamp"""
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    log_message = f"[{timestamp}] {message}\n"
-    try:
-        with open("collect-issue.log", "a", encoding="utf-8") as f:
-            f.write(log_message)
-    except Exception as e:
-        print(f"Error writing to log file: {e}")
+from ..helper import write_log
 
 
 def get_gitlab_issue_info(driver, wait, project, new_issue_url, issue_link_list):

@@ -18,7 +18,7 @@ def oncreate_testcase_update_issue_update_db(TEST_ISSUE_TEMP, TEST_ISSUE_DESC_TE
         write_log(f"Processing Issue #{iss_number_item}")
         try:
             # # create test issue
-            write_log(f"[Step 1] Creating test issue and file for Issue #{iss_number_item}")
+            write_log(f"       [Step 1] Creating test issue and file for Issue #{iss_number_item}")
             
             issue_test_url, path = oncreate_test_issue_and_file(driver, wait, TEST_ISSUE_TEMP, TEST_ISSUE_DESC_TEMP, TEST_ISSUE_FILE_TEMP, TEST_ISSUE_FOLDER_TEMP, iss_number_item, project_item, new_issue_url_item, issue_text_item)
             issue_test_number = issue_test_url[issue_test_url.rfind("/") + 1:]

@@ -97,9 +97,8 @@ def collect_gitlab_issues(driver, wait, issue_link_list):
   processed_count = 0
   for proj_url in project_links:
     processed_count += 1
-    write_log(f"\n[Project {processed_count}/{len(project_links)}]")
+    write_log(f"[Project {processed_count}/{len(project_links)}] - Project: {proj_url[1]}")
     write_log(f"Processing URL: {proj_url[0]}")
-    write_log(f"Project: {proj_url[1]}")
     
     try:
       write_log("Navigating to project URL...")
@@ -132,7 +131,7 @@ def create_testcase(driver, wait):
   
   try:
     # Step 1: GitLab Sign In
-    write_log("\n[Step 1/4] Logging into GitLab...")
+    write_log("\n[Step 1/5] Logging into GitLab...")
     write_log(f"Sign-in URL: {SIGN_IN_URL}")
     gitlabsignin(driver, SIGN_IN_URL, GITLAB_USERNAME, GITLAB_PASSWORD)
     write_log("✓ Successfully signed into GitLab")
@@ -141,12 +140,12 @@ def create_testcase(driver, wait):
     issue_link_list = []
     issue_obj_list = []
     
-    write_log("\n[Step 2/4] Collecting GitLab issues...")
+    write_log("\n[Step 2/5] Collecting GitLab issues...")
     collect_gitlab_issues(driver, wait, issue_link_list)
     write_log(f"✓ Completed issue collection. Found {len(issue_link_list)} issues")
     
     # Step 3: Update Issues and Database
-    write_log("\n[Step 3/4] Creating test cases and updating issues...")
+    write_log("\n[Step 3/5] Creating test cases and updating issues...")
     write_log(f"Test Case Folder: {TEST_ISSUE_FOLDER_TEMP}")
     write_log(f"Test Issue Template: {TEST_ISSUE_TEMP}")
     
@@ -163,12 +162,12 @@ def create_testcase(driver, wait):
     write_log(f"✓ Successfully created {len(issue_obj_list)} test cases")
     
     # Step 4: Save to Firebase
-    write_log("\n[Step 4/4] Saving data to Firebase database...")
+    write_log("\n[Step 4/5] Saving data to Firebase database...")
     firebase.save(issue_obj_list)
     write_log(f"✓ Successfully saved {len(issue_obj_list)} records to Firebase")
     
     # Step 5: Send Slack Notification
-    write_log("\n[Step 5/4] Sending Slack notification...")
+    write_log("\n[Step 5/5] Sending Slack notification...")
     if len(issue_obj_list) > 0:
       write_log(f"Sending success notification with {len(issue_obj_list)} records to Slack...")
       slack_protocol.send_survey(

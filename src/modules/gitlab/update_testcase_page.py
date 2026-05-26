@@ -148,12 +148,6 @@ def onfinish_update_label_and_return_Query(driver, wait, issue_url_item, id):
     elem = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//input[@aria-label='Search']")))
     elem_find_label = driver.find_element(By.XPATH, "//input[@aria-label='Search']")
     elem_find_label.click()
-
-    # elem = wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[@data-qa-selector='edit_link']")))
-    # driver.find_element(By.XPATH, "//button[@data-qa-selector='edit_link']").click() # Open textbox to input 
-    # elem = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//input[@aria-label='Search labels']")))
-    # elem_find_label = driver.find_element(By.XPATH, "//input[@aria-label='Search labels']")
-    # elem_find_label.click()
      
     write_finish_issue_log(f"     [Step 2] Adding 'Test Pass' label")
 
@@ -170,10 +164,6 @@ def onfinish_update_label_and_return_Query(driver, wait, issue_url_item, id):
 
     write_finish_issue_log(f"     [Step 3] Adding 'wf:Ready_for_UAT' label")
 
-    # elem_find_label.send_keys("wf:Ready_for_UAT")
-    # elem_testcase = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
-    # time.sleep(1)
-    # elem_testcase.send_keys(Keys.SPACE)
     elem_find_label.send_keys(label_wf_ready_for_uat)
     label_item = wait.until(
         expected_conditions.element_to_be_clickable(
@@ -184,12 +174,6 @@ def onfinish_update_label_and_return_Query(driver, wait, issue_url_item, id):
         )
     )
     label_item.click()  # Click to add label
-
-    # write_finish_issue_log(f"     [Step 4] Closing labels dropdown")
-
-    # elem = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@data-qa-selector='close_labels_dropdown_button']")))
-    # elem_close_asssign_label = driver.find_element(By.XPATH, "//button[@data-qa-selector='close_labels_dropdown_button']")
-    # elem_close_asssign_label.click()
 
     time.sleep(1)
     
@@ -206,8 +190,6 @@ def onfinish_update_label_and_return_Query(driver, wait, issue_url_item, id):
     )
     label_item.click()  # Click to remove label
 
-    # remove_label_qa(wait, issue_url_item)
-    
     btn_edit = driver.find_element(
         By.CSS_SELECTOR,
         "button[data-testid='work-item-edit-form-button']"
@@ -275,24 +257,3 @@ Please check the attach file for test result detail.
         write_finish_issue_log(f"     --- Completed onfinish_add_desc_and_attach_file ---")
     except Exception as ex:
         write_finish_issue_log(f"     ✗ Error submitting comment: {type(ex).__name__} – {ex}")
-
-def remove_label_qa(wait, url):
-     
-    write_finish_issue_log(f"     Attempting to remove 'wf:QA' label")
-    
-    try:
-        elem_qa = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//span[@data-qa-label-name='wf:QA']/button")))
-        elem_qa.click()
-         
-        write_finish_issue_log(f"     ✓ 'wf:QA' label removed")
-    except Exception as ex:
-         
-        write_finish_issue_log(f"     ✗ Error removing label: {type(ex).__name__} – {ex}")
-        print("Remove label wf:QA, Exception: " + str(ex.msg))
-        try:
-            slack_protocol.send_survey(user="remove", text=str.format(""":speech_balloon: *Error* on *Remove* label *wf:QA*. :anger:\nPlease check this <{0}|issue>.""", url))
-             
-            write_finish_issue_log(f"     ✓ Slack notification sent")
-        except Exception as slack_err:
-             
-            write_finish_issue_log(f"     ✗ Failed to send Slack: {slack_err}")

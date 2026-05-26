@@ -7,7 +7,7 @@ import pyautogui
 from ..db.sqlite import GitLab_Issue_Obj
 from ..slack import slack_protocol
 from .create_testcase_page import oncreate_test_issue_and_file
-from ..helper import write_log
+from ..helper import write_log, write_finish_issue_log
 
 def oncreate_testcase_update_issue_update_db(TEST_ISSUE_TEMP, TEST_ISSUE_DESC_TEMP, TEST_ISSUE_FILE_TEMP, TEST_ISSUE_FOLDER_TEMP, driver, wait, issue_link_list, issue_obj_list):
     write_log(f">>> Starting oncreate_testcase_update_issue_update_db with {len(issue_link_list)} issues to process")
@@ -56,7 +56,6 @@ def oncreate_testcase_update_issue_update_db(TEST_ISSUE_TEMP, TEST_ISSUE_DESC_TE
             label_item.click()  # Click to add label
 
             time.sleep(1)
-            # elem_find_label.send_keys(Keys.ENTER)
 
             write_log(f"       ✓ 'Test case' label added")
             write_log(f"       Removing 'Need to test' label")
@@ -74,7 +73,6 @@ def oncreate_testcase_update_issue_update_db(TEST_ISSUE_TEMP, TEST_ISSUE_DESC_TE
             )
             label_need_to_test_item.click()  # Click to add label
             time.sleep(1)
-            # elem_find_label.send_keys(Keys.ENTER)
 
             write_log(f"       ✓ 'Need to test' label removed")
             write_log(f"       Closing edit panel")
@@ -85,9 +83,6 @@ def oncreate_testcase_update_issue_update_db(TEST_ISSUE_TEMP, TEST_ISSUE_DESC_TE
             )
 
             btn_edit.click()
-            # elem = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@data-testid='work-item-edit-form-button']")))
-            # elem_edit = driver.find_element(By.XPATH, "//button[@data-testid='work-item-edit-button-sticky']")
-            # elem_edit.click()
 
             time.sleep(1)
             
@@ -132,71 +127,117 @@ def remove_label_needtotest(wait, url):
             write_log(f"     ✗ Failed to send Slack: {slack_err}")
 
 def onfinish_update_label_and_return_Query(driver, wait, issue_url_item, id):
-     
-    write_log(f" --- Starting onfinish_update_label_and_return_Query ---")
-    write_log(f" Issue URL: {issue_url_item}")
-    write_log(f" Issue ID: {id}")
+    label_test_pass = "Test Pass"
+    label_wf_qa = "wf:QA"
+    label_wf_ready_for_uat = "wf:Ready_for_UAT"
+    write_finish_issue_log(f" --- Starting onfinish_update_label_and_return_Query ---")
+    write_finish_issue_log(f" Issue URL: {issue_url_item}")
+    write_finish_issue_log(f" Issue ID: {id}")
 
     # update main issue
      
-    write_log(f"     [Step 1] Loading issue and opening edit panel")
+    write_finish_issue_log(f"     [Step 1] Loading issue and opening edit panel")
 
     driver.get(issue_url_item)
     time.sleep(3)
-    elem = wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[@data-qa-selector='edit_link']")))
-    driver.find_element(By.XPATH, "//button[@data-qa-selector='edit_link']").click() # Open textbox to input 
-    elem = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//input[@aria-label='Search labels']")))
-    elem_find_label = driver.find_element(By.XPATH, "//input[@aria-label='Search labels']")
+    # Add Test Pass Label>>
+    driver.find_element(
+        By.XPATH,
+        "//section[@data-testid='work-item-labels']//button[@data-testid='edit-button']"
+    ).click()
+    elem = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//input[@aria-label='Search']")))
+    elem_find_label = driver.find_element(By.XPATH, "//input[@aria-label='Search']")
     elem_find_label.click()
 
+    # elem = wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//button[@data-qa-selector='edit_link']")))
+    # driver.find_element(By.XPATH, "//button[@data-qa-selector='edit_link']").click() # Open textbox to input 
+    # elem = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//input[@aria-label='Search labels']")))
+    # elem_find_label = driver.find_element(By.XPATH, "//input[@aria-label='Search labels']")
+    # elem_find_label.click()
      
-    write_log(f"     [Step 2] Adding 'Test Pass' label")
+    write_finish_issue_log(f"     [Step 2] Adding 'Test Pass' label")
 
-    elem_find_label.send_keys("Test Pass")
-    elem_testcase = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
-    time.sleep(1)
-    elem_testcase.send_keys(Keys.SPACE)
+    elem_find_label.send_keys(label_test_pass)
+    label_item = wait.until(
+        expected_conditions.element_to_be_clickable(
+            (
+                By.XPATH,
+                f"//li[@role='option'][contains(., '{label_test_pass}')]"
+            )
+        )
+    )
+    label_item.click()  # Click to add label
 
-    write_log(f"     [Step 3] Adding 'wf:Ready_for_UAT' label")
+    write_finish_issue_log(f"     [Step 3] Adding 'wf:Ready_for_UAT' label")
 
-    elem_find_label.send_keys("wf:Ready_for_UAT")
-    elem_testcase = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
-    time.sleep(1)
-    elem_testcase.send_keys(Keys.SPACE)
+    # elem_find_label.send_keys("wf:Ready_for_UAT")
+    # elem_testcase = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='dropdown-item is-focused']")))
+    # time.sleep(1)
+    # elem_testcase.send_keys(Keys.SPACE)
+    elem_find_label.send_keys(label_wf_ready_for_uat)
+    label_item = wait.until(
+        expected_conditions.element_to_be_clickable(
+            (
+                By.XPATH,
+                f"//li[@role='option'][contains(., '{label_wf_ready_for_uat}')]"
+            )
+        )
+    )
+    label_item.click()  # Click to add label
 
-    write_log(f"     [Step 4] Closing labels dropdown")
+    # write_finish_issue_log(f"     [Step 4] Closing labels dropdown")
 
-    elem = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@data-qa-selector='close_labels_dropdown_button']")))
-    elem_close_asssign_label = driver.find_element(By.XPATH, "//button[@data-qa-selector='close_labels_dropdown_button']")
-    elem_close_asssign_label.click()
+    # elem = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@data-qa-selector='close_labels_dropdown_button']")))
+    # elem_close_asssign_label = driver.find_element(By.XPATH, "//button[@data-qa-selector='close_labels_dropdown_button']")
+    # elem_close_asssign_label.click()
 
     time.sleep(1)
     
-    write_log(f"     [Step 5] Removing 'wf:QA' label")
+    write_finish_issue_log(f"     [Step 4] Removing 'wf:QA' label")
     
-    remove_label_qa(wait, issue_url_item)
+    elem_find_label.send_keys(label_wf_qa)
+    label_item = wait.until(
+        expected_conditions.element_to_be_clickable(
+            (
+                By.XPATH,
+                f"//li[@role='option'][contains(., '{label_wf_qa}')]"
+            )
+        )
+    )
+    label_item.click()  # Click to remove label
+
+    # remove_label_qa(wait, issue_url_item)
     
-    write_log(f"     [Step 6] Generating update query")
+    btn_edit = driver.find_element(
+        By.CSS_SELECTOR,
+        "button[data-testid='work-item-edit-form-button']"
+    )
+
+    btn_edit.click()
+
+    time.sleep(1)
+    
+    write_finish_issue_log(f"     [Step 5] Generating update query")
 
     # # return query
     query = """UPDATE ISSUE
-SET test_state = 'Done'
-WHERE id = {0};
-""".format(id)
+        SET test_state = 'Done'
+        WHERE id = {0};
+        """.format(id)
     
-    write_log(f"     ✓ Update query generated")
-    write_log(f"     --- Completed onfinish_update_label_and_return_Query ---")
+    write_finish_issue_log(f"     ✓ Update query generated")
+    write_finish_issue_log(f"     --- Completed onfinish_update_label_and_return_Query ---")
     
     return query
 
 def onfinish_add_desc_and_attach_file(driver, wait, test_issue_url, project, test_file_path):
      
-    write_log(f" --- Starting onfinish_add_desc_and_attach_file ---")
-    write_log(f" Test Issue URL: {test_issue_url}")
-    write_log(f" Project: {project}")
-    write_log(f" File Path: {test_file_path}")
+    write_finish_issue_log(f" --- Starting onfinish_add_desc_and_attach_file ---")
+    write_finish_issue_log(f" Test Issue URL: {test_issue_url}")
+    write_finish_issue_log(f" Project: {project}")
+    write_finish_issue_log(f" File Path: {test_file_path}")
     
-    write_log(f"     [Step 1] Loading test issue page")
+    write_finish_issue_log(f"     [Step 1] Loading test issue page")
 
     driver.get(test_issue_url)
     driver.set_window_size(1047, 652)
@@ -205,66 +246,53 @@ def onfinish_add_desc_and_attach_file(driver, wait, test_issue_url, project, tes
 Please check the attach file for test result detail.
 
 """
-    
      
-    write_log(f"     [Step 2] Adding description")
+    write_finish_issue_log(f"     [Step 2] Adding description")
     
-    driver.find_element(By.ID, "note-body").send_keys(issue_test_desc)
-    
+    wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "textarea[data-testid='markdown-editor-form-field']")))
+    driver.find_element(By.CSS_SELECTOR, "textarea[data-testid='markdown-editor-form-field']").send_keys(issue_test_desc)
      
-    write_log(f"     [Step 3] Attaching file")
+    write_finish_issue_log(f"     [Step 3] Attaching file")
     
-    bt_attach_file = driver.find_element(By.XPATH, "//button[@title='Attach a file or image']")
+    bt_attach_file = driver.find_element(By.XPATH, "//button[@data-testid='button-attach-file']")
     bt_attach_file.click() # Attach file
     time.sleep(1)
-    
      
-    write_log(f"     [Step 3] Attaching file")
-    
-    bt_attach_file = driver.find_element(By.XPATH, "//button[@title='Attach a file or image']")
-    bt_attach_file.click() # Attach file
-    time.sleep(1)
-    
-     
-    write_log(f"     [Step 3.1] Sending file path")
+    write_finish_issue_log(f"     [Step 3.1] Sending file path")
     
     pyautogui.write(test_file_path) 
     pyautogui.press('enter')
 
     time.sleep(3)
-    
-     
-    write_log(f"     [Step 4] Submitting comment")
-    
-    elem = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='btn btn-confirm btn-md gl-button split-content-button']")))
-    elem.click()
-    
-     
-    write_log(f"     [Step 4] Submitting comment")
-    
-    elem = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@class='btn btn-confirm btn-md gl-button split-content-button']")))
-    elem.click()
+    try:
+        write_finish_issue_log(f"     [Step 4] Submitting comment")
+        wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@data-testid='confirm-button']")))
+        
+        confirm_button = driver.find_element(By.XPATH, "//button[@data-testid='confirm-button']")
+        confirm_button.click()
 
-    write_log(f"     ✓ Comment submitted")
-    write_log(f"     --- Completed onfinish_add_desc_and_attach_file ---")
+        write_finish_issue_log(f"     ✓ Comment submitted")
+        write_finish_issue_log(f"     --- Completed onfinish_add_desc_and_attach_file ---")
+    except Exception as ex:
+        write_finish_issue_log(f"     ✗ Error submitting comment: {type(ex).__name__} – {ex}")
 
 def remove_label_qa(wait, url):
      
-    write_log(f"     Attempting to remove 'wf:QA' label")
+    write_finish_issue_log(f"     Attempting to remove 'wf:QA' label")
     
     try:
         elem_qa = wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//span[@data-qa-label-name='wf:QA']/button")))
         elem_qa.click()
          
-        write_log(f"     ✓ 'wf:QA' label removed")
+        write_finish_issue_log(f"     ✓ 'wf:QA' label removed")
     except Exception as ex:
          
-        write_log(f"     ✗ Error removing label: {type(ex).__name__} – {ex}")
+        write_finish_issue_log(f"     ✗ Error removing label: {type(ex).__name__} – {ex}")
         print("Remove label wf:QA, Exception: " + str(ex.msg))
         try:
             slack_protocol.send_survey(user="remove", text=str.format(""":speech_balloon: *Error* on *Remove* label *wf:QA*. :anger:\nPlease check this <{0}|issue>.""", url))
              
-            write_log(f"     ✓ Slack notification sent")
+            write_finish_issue_log(f"     ✓ Slack notification sent")
         except Exception as slack_err:
              
-            write_log(f"     ✗ Failed to send Slack: {slack_err}")
+            write_finish_issue_log(f"     ✗ Failed to send Slack: {slack_err}")

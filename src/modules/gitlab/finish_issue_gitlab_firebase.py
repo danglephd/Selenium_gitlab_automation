@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 from ..slack import slack_protocol
 from .excel_file_testcase_manage import update_finish_date_file_testcase
+from ..helper import write_finish_issue_log
 
 try:
   load_dotenv()
@@ -23,7 +24,7 @@ try:
   # print("Environment variable>>> ", TEST_ISSUE_TEMP, TEST_ISSUE_DESC_TEMP)
 
 except  Exception as error:
-  print("Main, Environment variable does not exist: ",  type(error).__name__, "–", error)
+  write_finish_issue_log(f"Main, Environment variable does not exist: {type(error).__name__} – {error}")
 
 def collect_finish_gitlab_issues(issue_finished_list):
     
@@ -40,7 +41,7 @@ def collect_finish_gitlab_issues(issue_finished_list):
         issue_finished_list.append(item)
 
 def finish_testcase(driver, wait):
-    print("RPA finish_testcase")
+    write_finish_issue_log("RPA finish_testcase")
     issue_finished_list = []
     issue_finished_success_list = []
     collect_finish_gitlab_issues(issue_finished_list)
@@ -78,7 +79,7 @@ def checkFileIsValid(file_path):
     """
     try:
         if not file_path or not os.path.isfile(file_path):
-            print(f"File không tồn tại: {file_path}")
+            write_finish_issue_log(f"File không tồn tại: {file_path}")
             return False
             
         max_size = 10 * 1024 * 1024  # 10MB
@@ -86,10 +87,10 @@ def checkFileIsValid(file_path):
         
         is_valid = file_size < max_size
         if not is_valid:
-            print(f"File quá lớn ({file_size / (1024*1024):.2f}MB): {file_path}")
+            write_finish_issue_log(f"File quá lớn ({file_size / (1024*1024):.2f}MB): {file_path}")
             
         return is_valid
         
     except Exception as e:
-        print(f"Lỗi khi kiểm tra file: {str(e)}")
+        write_finish_issue_log(f"Lỗi khi kiểm tra file: {str(e)}")
         return False

@@ -27,6 +27,7 @@ def oncreate_test_issue_and_file(driver, wait, TEST_ISSUE_TEMP, TEST_ISSUE_DESC_
     
     write_log(f"[3/6] Filling issue description")
     
+    wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "textarea[data-testid='markdown-editor-form-field']")))
     driver.find_element(By.CSS_SELECTOR, "textarea[data-testid='markdown-editor-form-field']").send_keys(issue_test_desc)
     
     # write_log(f"[4/6] Assigning issue to me")
@@ -48,7 +49,7 @@ def oncreate_test_issue_and_file(driver, wait, TEST_ISSUE_TEMP, TEST_ISSUE_DESC_
     file_name = "{0}-{1}-{2}".format(TEST_ISSUE_FILE_TEMP, iss_number, issue_test_number)
     
     write_log(f"       ✓ Test issue created: {issue_test_url}")
-    write_log(f"       [6/6] Adding labels and related issues")
+    write_log(f"[6/6] Adding labels and related issues")
     
     time.sleep(3)
     try:
@@ -67,18 +68,19 @@ def oncreate_test_issue_and_file(driver, wait, TEST_ISSUE_TEMP, TEST_ISSUE_DESC_
         elem_find_label.send_keys(Keys.ENTER)
         
         write_log(f"       ✓ 'type:Test' label added")
-        write_log(f"       Adding related issue #{iss_number}")
-    
         # <<
+        write_log(f"       Adding related issue #{iss_number}")
+        time.sleep(1)
         driver.find_element(By.XPATH, "//button[@data-testid='link-item-add-button']").click() # Open textbox to input 
         input_el = driver.find_element(
             By.CSS_SELECTOR,
             "input[role='combobox']"
         )
-
         input_el.send_keys(iss_number + " ")# Input issue number to link
-        driver.find_element(By.XPATH, "//button[@data-testid='link-work-item-button']").click() # Click Add button
-        elem = wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//ul[@class='work-items-list content-list sortable-container gl-cursor-grab']"))) # Wait for finish add related 
+        time.sleep(1)
+        input_el.send_keys(Keys.ENTER)
+        # driver.find_element(By.XPATH, "//button[@data-testid='link-work-item-button']").click() # Click Add button
+        # elem = wait.until(expected_conditions.presence_of_element_located((By.XPATH, "//ul[@class='work-items-list content-list sortable-container gl-cursor-grab']"))) # Wait for finish add related 
         
         write_log(f"       ✓ Related issue added")
         write_log(f"       Creating test case file")

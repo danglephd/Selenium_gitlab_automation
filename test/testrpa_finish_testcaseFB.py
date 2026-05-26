@@ -4,6 +4,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import TimeoutException
+from src.modules.helper import write_finish_issue_log
+
 
 class TestRPA_Finish_Testcase_FB:
 
@@ -18,11 +20,13 @@ class TestRPA_Finish_Testcase_FB:
         self.driver = webdriver.Chrome(service=service, options=options)
         self.wait = WebDriverWait(self.driver, delay)
         self.vars = {}
-        print("Setup completed")
+        with open("finish-issue.log", "w", encoding="utf-8") as f:
+            f.write("Setup completed\n")
+
 
     def teardown_method(self, method):
         self.driver.quit()
-        print("Teardown completed")
+        write_finish_issue_log("Teardown completed")
 
     def test_finish_testcase(self):
         try:
@@ -30,4 +34,5 @@ class TestRPA_Finish_Testcase_FB:
         except TimeoutException as e:
             pytest.fail(f"Timeout occurred: {e}")
         finally:
+            write_finish_issue_log("Finalizing test...")
             self.driver.quit()

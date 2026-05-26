@@ -4,6 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import TimeoutException
+from src.modules.helper import write_log
 
 class TestRPA_Create_Testcase_FB:
 
@@ -23,8 +24,7 @@ class TestRPA_Create_Testcase_FB:
 
     def teardown_method(self, method):
         self.driver.quit()
-        with open("collect-issue.log", "a", encoding="utf-8") as f:
-            f.write("Teardown completed\n")
+        write_log("Teardown completed\n")
 
     def test_create_testcase(self):
         try:

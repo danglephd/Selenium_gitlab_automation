@@ -46,33 +46,49 @@ ALTER TABLE ISSUE ADD COLUMN duedate char(50) default ' ';
 
 # How to run it
 
-## Setup
+## Setup on Ubuntu
 
-- Install virtualenv (optional)
+- Install Python virtual-environment support (one time)
 ```bash
-python3 -m virtualenv .   
+sudo apt update
+sudo apt install python3.12-venv
 ```
-- Init venvironment
+- Create a virtual environment
 ```bash
-virtualenv venvironment 
+python3 -m venv .venv
 ```
-- If error on use file .ps1, then run:
+- Install dependencies
 ```bash
-set-executionpolicy remotesigned
+./.venv/bin/python -m pip install -r requirements.txt
 ```
-- Activate environment
+- Create a local `.env` file with the GitLab, project URL, template path, Slack,
+  and Firebase settings used by the workflow. Do not commit this file or the
+  Firebase service-account JSON file.
+- Make the Ubuntu scripts executable
 ```bash
-Scripts\activate
-```
-- Install from [requirements.txt](requirements.txt)
-```bash
-pip install -r requirements.txt
+chmod +x PytestSelenium*.sh
 ```
 
 ## Run
-- Run pytest on file [rpa_gitlab_qa.py](rpa_gitlab_qa.py)
+- Run all create/finish jobs
 ```bash
-pytest .\rpa_gitlab_qa.py
+./PytestSelenium.sh
+```
+- Collect new issues only
+```bash
+./PytestSelenium_collect_issue.sh
+```
+- Finish issues only
+```bash
+./PytestSelenium_Finish.sh
+```
+- Update the local database
+```bash
+./PytestSelenium_updatedb.sh
+```
+- Run the due-date test
+```bash
+./PytestSeleniumDuedate.sh
 ```
 
 

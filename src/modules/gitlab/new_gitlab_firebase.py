@@ -9,6 +9,10 @@ from ..helper import write_log
 
 from ..slack import slack_protocol
 
+SIGN_IN_URL = None
+project_links = []
+configuration_error = None
+
 try:
   load_dotenv()
   write_log("=== Script Started ===")
@@ -76,17 +80,18 @@ try:
     # [ADMIN_PAGE_FIND_ISSUE_URL, ADMIN_PAGE_PROJECT, ADMIN_PAGE_NEW_ISSUE_URL],
     # [ERP_WEB_DEMO_FIND_ISSUE_URL, ERP_WEB_DEMO_PROJECT, ERP_WEB_DEMO_NEW_ISSUE_URL, ERP_WEB_DEMO_FIND_TEST_ISSUE_URL],
 
-    # [XM_LA_FIND_ISSUE_URL, XM_LA_PROJECT, XM_LA_NEW_ISSUE_URL, XM_LA_FIND_TEST_ISSUE_URL],
-    [XM_WEB_FIND_ISSUE_URL, XM_WEB_PROJECT, XM_WEB_NEW_ISSUE_URL, XM_WEB_FIND_TEST_ISSUE_URL],
-    [XM_API_FIND_ISSUE_URL, XM_API_PROJECT, XM_API_NEW_ISSUE_URL, XM_API_FIND_TEST_ISSUE_URL],
-    [ERP_WEB_FIND_ISSUE_URL, ERP_WEB_PROJECT, ERP_WEB_NEW_ISSUE_URL, ERP_WEB_FIND_TEST_ISSUE_URL],
-    [ERP_SERVER_FIND_ISSUE_URL, ERP_SERVER_PROJECT, ERP_SERVER_NEW_ISSUE_URL, ERP_SERVER_FIND_TEST_ISSUE_URL]
+    [XM_LA_FIND_ISSUE_URL, XM_LA_PROJECT, XM_LA_NEW_ISSUE_URL, XM_LA_FIND_TEST_ISSUE_URL],
+    # [XM_WEB_FIND_ISSUE_URL, XM_WEB_PROJECT, XM_WEB_NEW_ISSUE_URL, XM_WEB_FIND_TEST_ISSUE_URL],
+    # [XM_API_FIND_ISSUE_URL, XM_API_PROJECT, XM_API_NEW_ISSUE_URL, XM_API_FIND_TEST_ISSUE_URL],
+    # [ERP_WEB_FIND_ISSUE_URL, ERP_WEB_PROJECT, ERP_WEB_NEW_ISSUE_URL, ERP_WEB_FIND_TEST_ISSUE_URL],
+    # [ERP_SERVER_FIND_ISSUE_URL, ERP_SERVER_PROJECT, ERP_SERVER_NEW_ISSUE_URL, ERP_SERVER_FIND_TEST_ISSUE_URL]
   ]
   
   write_log(f"Configured {len(project_links)} active project links")
 
 except  Exception as error:
   error_msg = f"Main, Environment variable does not exist: {type(error).__name__} – {error}"
+  configuration_error = error_msg
   print(error_msg)
   write_log(f"✗ ERROR: {error_msg}")
 
@@ -125,6 +130,12 @@ def collect_gitlab_issues(driver, wait, issue_link_list):
   write_log(f"Total issues collected: {len(issue_link_list)}")
 
 def create_testcase(driver, wait):
+  if configuration_error:
+    raise RuntimeError(
+        f"GitLab configuration is incomplete: {configuration_error}. "
+        "Create a .env file with the required project settings."
+    )
+
   write_log("\n" + "="*60)
   write_log(">>> STARTING CREATE_TESTCASE WORKFLOW <<<")
   write_log("="*60)

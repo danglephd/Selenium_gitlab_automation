@@ -241,8 +241,14 @@ Please check the attach file for test result detail.
      
     write_finish_issue_log(f"     [Step 3.1] Sending file path")
     import pyautogui
+    import pyperclip
+    pyautogui.hotkey("ctrl", "l")
+    time.sleep(0.5)
 
-    pyautogui.write(test_file_path) 
+    pyperclip.copy(test_file_path)
+    pyautogui.hotkey("ctrl", "v")
+    # pyautogui.write(test_file_path) 
+    time.sleep(0.5)
     pyautogui.press('enter')
 
     time.sleep(3)
@@ -250,8 +256,12 @@ Please check the attach file for test result detail.
         write_finish_issue_log(f"     [Step 4] Submitting comment")
         wait.until(expected_conditions.element_to_be_clickable((By.XPATH, "//button[@data-testid='confirm-button']")))
         
-        confirm_button = driver.find_element(By.XPATH, "//button[@data-testid='confirm-button']")
+        confirm_button = wait.until(
+            expected_conditions.element_to_be_clickable((By.XPATH, "//button[@data-testid='confirm-button']"))
+        )
         confirm_button.click()
+        wait.until(lambda current_driver: expected_file_name in current_driver.find_element(By.TAG_NAME, "body").text)
+
 
         write_finish_issue_log(f"     ✓ Comment submitted")
         write_finish_issue_log(f"     --- Completed onfinish_add_desc_and_attach_file ---")

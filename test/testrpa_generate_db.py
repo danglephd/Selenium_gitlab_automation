@@ -1,5 +1,6 @@
 import pytest
-from src.modules import sqlite_db, firebase_db
+from src.modules import sqlite_db
+from src.modules.db import firebase as firebase_db
 
 class TestRPA_Generate_DB():
   

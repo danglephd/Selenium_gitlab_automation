@@ -17,9 +17,8 @@ import shutil
 import sqlite
 from sqlite import GitLab_Issue_Obj
 from openpyxl import load_workbook
-import pyautogui
 from slack_webhook import *
-import firebase_db
+from src.modules.db import firebase as firebase_db
 from enum import Enum
 from datetime import datetime
 

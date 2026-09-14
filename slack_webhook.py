@@ -5,6 +5,11 @@ from slack_sdk import WebClient
 from slack_sdk.webhook import WebhookClient
 from dotenv import load_dotenv
 
+SLACK_BOT_TOKEN = None
+CHANNEL_ID = None
+SLACK_HOOK = None
+slack_client = None
+
 try:
     load_dotenv()
     # SLACK_VERIFICATION_TOKEN = os.environ["SLACK_VERIFICATION_TOKEN"]
@@ -26,6 +31,9 @@ except KeyError:
 
 def send_survey(user, text, block=None, channel = CHANNEL_ID):
     print('>>>send_survey ', user, text, block, channel)
+    if slack_client is None:
+        print("Slack is not configured; skipping notification.")
+        return
     slack_client.api_call(
         # api_method="chat.postMessage", json={"channel": channel, "blocks": json.dumps(block), "text": block}
         api_method="chat.postMessage", json={"channel": channel, "blocks": block or None, "text": text}

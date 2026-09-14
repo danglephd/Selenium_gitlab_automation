@@ -3,7 +3,6 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import TimeoutException
 import time
-import pyautogui
 from ..db.sqlite import GitLab_Issue_Obj
 from ..slack import slack_protocol
 from .create_testcase_page import oncreate_test_issue_and_file
@@ -241,7 +240,8 @@ Please check the attach file for test result detail.
     time.sleep(1)
      
     write_finish_issue_log(f"     [Step 3.1] Sending file path")
-    
+    import pyautogui
+
     pyautogui.write(test_file_path) 
     pyautogui.press('enter')
 

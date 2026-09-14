@@ -1,6 +1,8 @@
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
+import os
+from pathlib import Path
 
 # import sqlite module
 from . import sqlite
@@ -9,17 +11,31 @@ from .sqlite import GitLab_Issue_Obj
 # Constants
 ISSUES_COLLECTION = 'issues'
 
-# Fetch the service account key JSON file contents
-cred = credentials.Certificate('./Firebase/projp21-17b04-firebase-adminsdk-kgxr3-5292b73c39.json')
-# Initialize the app with a service account, granting admin privileges
-firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://projp21-17b04-default-rtdb.asia-southeast1.firebasedatabase.app/'
-})
+_credential_path = Path(os.getenv(
+    'FIREBASE_CREDENTIALS',
+    Path(__file__).resolve().parents[3] / 'Firebase' / 'projp21-17b04-firebase-adminsdk-kgxr3-5292b73c39.json'
+))
+_firebase_app = None
+
+if _credential_path.is_file():
+    cred = credentials.Certificate(str(_credential_path))
+    _firebase_app = firebase_admin.initialize_app(cred, {
+        'databaseURL': 'https://projp21-17b04-default-rtdb.asia-southeast1.firebasedatabase.app/'
+    })
+else:
+    print(f"Firebase credentials not found: {_credential_path}")
+
+def _firebase_reference():
+    if _firebase_app is None:
+        raise RuntimeError(
+            'Firebase is not configured. Set FIREBASE_CREDENTIALS to a service-account JSON file.'
+        )
+    return db.reference(ISSUES_COLLECTION)
 
 def create_db():
     print('>>>create_db')
     lst_gitLab_issue_obj = sqlite.getListIssue("")
-    ref = db.reference(ISSUES_COLLECTION)
+    ref = _firebase_reference()
     # ref.set({
     #     'issues': 
     #         {
@@ -49,7 +65,7 @@ def create_db():
 
 def save(gitLab_issue_obj):
     print('>>>save')
-    ref = db.reference(ISSUES_COLLECTION)
+    ref = _firebase_reference()
     
     for item in gitLab_issue_obj:
         ref.push({
@@ -65,7 +81,7 @@ def save(gitLab_issue_obj):
 
 def update(id, gitLab_issue_obj):
     print('>>>update ', id, gitLab_issue_obj.duedate)
-    ref = db.reference(ISSUES_COLLECTION)
+    ref = _firebase_reference()
     box_ref = ref.child(id)
     box_ref.update({
         'test_state': gitLab_issue_obj.test_state,
@@ -83,7 +99,7 @@ def update_issue_test_state(id, test_state):
 def update_testcase_status(issue_url):
     print('>>>update_testcase_status')
     try:
-        ref = db.reference(ISSUES_COLLECTION)
+        ref = _firebase_reference()
         snapshot = ref.order_by_child("issue_url").equal_to(issue_url).limit_to_first(2).get()
         for key, val in snapshot.items():
             print(f"issue_key {key=}")
@@ -97,7 +113,7 @@ def update_testcase_status(issue_url):
 def getListIssue(criteria):
     print('>>>getListIssue', criteria)
     try:
-        ref = db.reference(ISSUES_COLLECTION)
+        ref = _firebase_reference()
         data = []
         snapshot = ref.order_by_child(criteria[0]).equal_to(criteria[1]).get()
         
@@ -141,7 +157,7 @@ def getListIssue2(criteria):
         if not isinstance(value_list, list):
             raise ValueError("value_list must be a list")
             
-        ref = db.reference(ISSUES_COLLECTION)
+        ref = _firebase_reference()
         data = []
         
         # Get all issues first

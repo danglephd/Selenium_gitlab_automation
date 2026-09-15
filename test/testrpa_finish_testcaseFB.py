@@ -14,9 +14,12 @@ class TestRPA_Finish_Testcase_FB:
 # self.driver = webdriver.Chrome()
         service = Service()
         options = webdriver.ChromeOptions()
+        options.add_argument("--headless=new")
         options.add_argument("--disable-gpu")
         options.add_argument('--log-level=3')  # INFO = 0, WARNING = 1, LOG_ERROR = 2, LOG_FATAL = 3
         options.add_argument("--window-size=1920,1080")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
         self.driver = webdriver.Chrome(service=service, options=options)
         self.wait = WebDriverWait(self.driver, delay)
         self.vars = {}

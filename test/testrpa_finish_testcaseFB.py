@@ -1,10 +1,15 @@
+import os
+
 import pytest
+from dotenv import load_dotenv
 from src.modules.gitlab import finish_issue_gitlab_firebase
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 from src.modules.helper import write_finish_issue_log
+
+load_dotenv()
 
 
 class TestRPA_Finish_Testcase_FB:
@@ -14,7 +19,11 @@ class TestRPA_Finish_Testcase_FB:
 # self.driver = webdriver.Chrome()
         service = Service()
         options = webdriver.ChromeOptions()
-        options.add_argument("--headless=new")
+
+        use_headless = os.getenv("HEADLESS", "1").strip().lower() not in {"0", "false", "no", "off"}
+        if use_headless:
+            options.add_argument("--headless=new")
+
         options.add_argument("--disable-gpu")
         options.add_argument('--log-level=3')  # INFO = 0, WARNING = 1, LOG_ERROR = 2, LOG_FATAL = 3
         options.add_argument("--window-size=1920,1080")

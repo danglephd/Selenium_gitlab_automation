@@ -7,9 +7,9 @@ from ..helper import write_log
 
 
 def get_testcase_root_path():
-    configured_root = os.getenv("TESTCASE_ROOT_PATH", "/media/dango/data/Testcase/RPA").strip()
+    configured_root = os.getenv("TESTCASE_ROOT_PATH", "/media/dango/data1/Testcase/RPA").strip()
     if not configured_root:
-        configured_root = "/media/dango/data/Testcase/RPA"
+        configured_root = "/media/dango/data1/Testcase/RPA"
     return configured_root
 
 

@@ -76,7 +76,8 @@ def save(gitLab_issue_obj):
             'issue_test_number': item.issue_test_number,
             'issue_url': item.issue_url,
             'duedate': item.duedate,
-            'issue_number': item.issue_number
+            'issue_number': item.issue_number,
+            'issue_desc': item.issue_desc,
         })
 
 def update(id, gitLab_issue_obj):
@@ -86,6 +87,7 @@ def update(id, gitLab_issue_obj):
     box_ref.update({
         'test_state': gitLab_issue_obj.test_state,
         'duedate': gitLab_issue_obj.duedate,
+        'issue_desc': gitLab_issue_obj.issue_desc
     })
 
 def update_issue_test_state(id, test_state):
@@ -136,7 +138,8 @@ def getListIssue(criteria):
                 issue_test_number=val['issue_test_number'], 
                 issue_number=val['issue_number'], 
                 issue_url=val['issue_url'],
-                duedate=duedate
+                duedate=duedate,
+                issue_desc=val.get('issue_desc', '')
                 ))
         return data
     except Exception as err:
@@ -181,7 +184,8 @@ def getListIssue2(criteria):
                         issue_test_number=val['issue_test_number'], 
                         issue_number=val['issue_number'], 
                         issue_url=val['issue_url'],
-                        duedate=duedate
+                        duedate=duedate,
+                        issue_desc=val.get('issue_desc', '')
                     ))
             except Exception as e:
                 print(f"Error processing issue {key}: {str(e)}")
@@ -210,6 +214,7 @@ def getAllIssue():
         data.append(GitLab_Issue_Obj(
             id=0, project=val['project'], path=val['path'], test_state=val['test_state'], 
             issue_test_url=val['issue_test_url'], issue_test_number=val['issue_test_number'], 
-            issue_number=val['issue_number'], issue_url=val['issue_url'], duedate=duedate))
+            issue_number=val['issue_number'], issue_url=val['issue_url'], duedate=duedate,
+            issue_desc=val.get('issue_desc', '')))
     return data
     

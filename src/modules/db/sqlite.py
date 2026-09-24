@@ -105,7 +105,7 @@ def getListIssue(criteria):
         print(f"Unexpected {err=}, {type(err)=}")
         
 class GitLab_Issue_Obj:
-    def __init__(self, id, project, path, test_state, issue_test_url, issue_test_number, issue_number, issue_url, duedate = " "):
+    def __init__(self, id, project, path, test_state, issue_test_url, issue_test_number, issue_number, issue_url, duedate = " ", issue_desc = ""):
         self.id = id
         self.issue_number = issue_number
         self.issue_url = issue_url
@@ -115,3 +115,4 @@ class GitLab_Issue_Obj:
         self.test_state = test_state
         self.path = path
         self.duedate = duedate
+        self.issue_desc = issue_desc

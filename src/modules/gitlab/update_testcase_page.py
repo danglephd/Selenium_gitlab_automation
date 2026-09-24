@@ -90,7 +90,7 @@ def oncreate_testcase_update_issue_update_db(TEST_ISSUE_TEMP, TEST_ISSUE_DESC_TE
             # remove_label_needtotest(wait, url=issue_url_item)
 
             # # update db
-            item = GitLab_Issue_Obj(id=0, project=project_item, path=path, test_state="Created", issue_test_url=issue_test_url, issue_test_number=issue_test_number, issue_number=iss_number_item, issue_url=issue_url_item, duedate=" "            
+            item = GitLab_Issue_Obj(id=0, project=project_item, path=path, test_state="Created", issue_test_url=issue_test_url, issue_test_number=issue_test_number, issue_number=iss_number_item, issue_url=issue_url_item, duedate=" ", issue_desc=issue_text_item            
             )
             issue_obj_list.append(item)
             
